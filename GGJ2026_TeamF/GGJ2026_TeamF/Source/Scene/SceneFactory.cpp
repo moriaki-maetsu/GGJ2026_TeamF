@@ -20,7 +20,6 @@ SceneBase* SceneFactory::CreateScene(eSceneType new_scene_type)
 			return dynamic_cast<SceneBase*>(new PhaseTwo());
 		case eSceneType::eResult:
 			return dynamic_cast<SceneBase*>(new ResultScene());
-
 		case eSceneType::eEnding:
 			return dynamic_cast<SceneBase*>(new EndingScene());
 		case eSceneType::eExit:

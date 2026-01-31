@@ -1,12 +1,18 @@
 ﻿#pragma once
 
 #include "../SceneBase.h"
+#include "../../Hero/HeroData.h"
 
 class PhaseOne : public SceneBase
 {
+private:
+	int time;
+	HeroData hero[2];
 public:
 	PhaseOne()
 		: SceneBase()
+		, time()
+		, hero()
 	{
 
 	}

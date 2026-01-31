@@ -61,6 +61,8 @@ void Application::Run()
 		// メインループ
 		while (ProcessMessage() == 0 && execute_flag)
 		{
+			
+
 			// 入力情報の更新
 			InputManager* input = InputManager::Get();
 			input->Update();
