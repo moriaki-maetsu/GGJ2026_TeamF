@@ -23,7 +23,8 @@
     <ClCompile Include="AppMain.cpp" />
     <ClCompile Include="Objects\GameObjectManager.cpp" />
     <ClCompile Include="Scene\Ending\EndingScene.cpp" />
-    <ClCompile Include="Scene\InGame\InGameScene.cpp" />
+    <ClCompile Include="Scene\PhaseOne\PhaseOne.cpp" />
+    <ClCompile Include="Scene\PhaseTwo\PhaseTwo.cpp" />
     <ClCompile Include="Scene\Result\ResultScene.cpp" />
     <ClCompile Include="Scene\SceneFactory.cpp" />
     <ClCompile Include="Scene\SceneManager.cpp" />
@@ -39,7 +40,8 @@
     <ClInclude Include="Objects\GameObjectManager.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene\Ending\EndingScene.h" />
-    <ClInclude Include="Scene\InGame\InGameScene.h" />
+    <ClInclude Include="Scene\PhaseOne\PhaseOne.h" />
+    <ClInclude Include="Scene\PhaseTwo\PhaseTwo.h" />
     <ClInclude Include="Scene\Result\ResultScene.h" />
     <ClInclude Include="Scene\SceneBase.h" />
     <ClInclude Include="Scene\SceneFactory.h" />

@@ -1,29 +1,30 @@
-ï»¿#pragma once
+#pragma once
+#pragma once
 
 #include "../SceneBase.h"
 
-class InGameScene : public SceneBase
+class PhaseTwo : public SceneBase
 {
 public:
-	InGameScene()
+	PhaseTwo()
 		: SceneBase()
 	{
 
 	}
-	virtual ~InGameScene() = default;
+	virtual ~PhaseTwo() = default;
 public:
-	// åˆæœŸåŒ–
+	// ‰Šú‰»
 	virtual void Initialize() override;
-	// æ›´æ–°
+	// XV
 	virtual eSceneType Update(float delta_second) override;
-	// æç”»
+	// •`‰æ
 	virtual void Draw() const override;
-	// çµ‚äº†æ™‚
+	// I—¹
 	virtual void Finalize() override;
 
 public:
 	virtual eSceneType GetNowSceneType() const override
 	{
-		return eSceneType::eInGame;
+		return eSceneType::ePhaseTwo;
 	}
 };

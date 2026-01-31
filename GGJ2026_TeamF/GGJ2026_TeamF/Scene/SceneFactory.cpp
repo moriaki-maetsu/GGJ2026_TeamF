@@ -1,7 +1,7 @@
 #include "SceneFactory.h"
 
 #include "Title/TitleScene.h"
-#include "InGame/InGameScene.h"
+#include "PhaseOne/PhaseOne.h"
 #include "Result/ResultScene.h"
 #include "Ending/EndingScene.h"
 
@@ -13,8 +13,8 @@ SceneBase* SceneFactory::CreateScene(eSceneType new_scene_type)
 	
 		case eSceneType::eTitle:
 			return dynamic_cast<SceneBase*>(new TitleScene());
-		case eSceneType::eInGame:
-			return dynamic_cast<SceneBase*>(new InGameScene());
+		case eSceneType::ePhaseOne:
+			return dynamic_cast<SceneBase*>(new PhaseOne());
 		case eSceneType::eResult:
 			return dynamic_cast<SceneBase*>(new ResultScene());
 
