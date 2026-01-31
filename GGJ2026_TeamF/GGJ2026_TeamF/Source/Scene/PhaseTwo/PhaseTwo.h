@@ -6,7 +6,16 @@
 class PhaseTwo : public SceneBase
 {
 private:
-	std::vector<HeroData> heros;
+
+	struct PhaseTwoHeros
+	{
+		HeroData data;
+		bool is_selected;
+	};
+
+	std::vector<PhaseTwoHeros> heros;
+
+	float scrollx;
 
 public:
 	PhaseTwo()
