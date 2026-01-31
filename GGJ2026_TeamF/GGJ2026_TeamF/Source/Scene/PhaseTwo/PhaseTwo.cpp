@@ -4,7 +4,7 @@
 
 void PhaseTwo::Initialize()
 {
-	int handle = AssetContainer::Get()->GetImages("Assets/Images/ProtoHero.png")[0];
+	int handle = AssetContainer::Get()->GetImages("ProtoHero.png")[0];
 	for (int i = 0; i < 10; i++)
 	{
 		heros.push_back({ Vector2D{100.f * 30.f * i,10},eColor::eRed,10,handle });

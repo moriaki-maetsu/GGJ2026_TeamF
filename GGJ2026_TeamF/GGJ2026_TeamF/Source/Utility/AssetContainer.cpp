@@ -54,7 +54,7 @@ void AssetContainer::AllRelease()
 void AssetContainer::CreateSprite(const std::string& file_name, int div, int dx, int dy, int px, int py)
 {
 	// 画像が格納されているフォルダパスの指定
-	std::string file_path = "Resource/Sprites/";
+	std::string file_path = "Assets/Images/";
 	// 引数とフォルダパスをくっ付ける
 	file_path += file_name;
 	// 分割読み込みする量だけメモリを動的にメモリを確保する
@@ -79,7 +79,7 @@ void AssetContainer::CreateSprite(const std::string& file_name, int div, int dx,
 void AssetContainer::CreateSprite(const std::string& file_name)
 {
 	// 画像が格納されているフォルダパスの指定
-	std::string file_path = "Resource/Sprites/";
+	std::string file_path = "Assets/Images/";
 	// 引数とフォルダパスをくっ付ける
 	file_path += file_name;
 
@@ -98,7 +98,7 @@ void AssetContainer::CreateSprite(const std::string& file_name)
 void AssetContainer::CreateSound(const std::string& file_name)
 {
 	// 音源が格納されているフォルダパスの指定
-	std::string file_path = "Resource/Sounds/";
+	std::string file_path = "Assets/Sounds/";
 	// 引数とフォルダパスをくっ付ける
 	file_path += file_name;
 
