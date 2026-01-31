@@ -2,6 +2,7 @@
 
 #include "Title/TitleScene.h"
 #include "PhaseOne/PhaseOne.h"
+#include "PhaseTwo/PhaseTwo.h"
 #include "Result/ResultScene.h"
 #include "Ending/EndingScene.h"
 
@@ -15,6 +16,8 @@ SceneBase* SceneFactory::CreateScene(eSceneType new_scene_type)
 			return dynamic_cast<SceneBase*>(new TitleScene());
 		case eSceneType::ePhaseOne:
 			return dynamic_cast<SceneBase*>(new PhaseOne());
+		case eSceneType::ePhaseTwo:
+			return dynamic_cast<SceneBase*>(new PhaseTwo());
 		case eSceneType::eResult:
 			return dynamic_cast<SceneBase*>(new ResultScene());
 

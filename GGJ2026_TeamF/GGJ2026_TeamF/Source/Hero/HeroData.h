@@ -4,7 +4,7 @@
 #define HERO_SIZE_X	(10)
 #define HERO_SIZE_Y	(10)
 
-enum class Color : unsigned char
+enum class eColor : unsigned char
 {
 	eRed,
 	eBlue,
@@ -13,7 +13,7 @@ enum class Color : unsigned char
 struct HeroData
 {
 	Vector2D position;		// À•W
-	Color color;			// F
+	eColor color;			// F
 	int power;				// —Í
 	int image;				// ‰æ‘œ
 };

@@ -1,10 +1,13 @@
 #pragma once
-#pragma once
 
 #include "../SceneBase.h"
+#include "../../Hero/Heros.h"
 
 class PhaseTwo : public SceneBase
 {
+private:
+	std::vector<HeroData> heros;
+
 public:
 	PhaseTwo()
 		: SceneBase()
