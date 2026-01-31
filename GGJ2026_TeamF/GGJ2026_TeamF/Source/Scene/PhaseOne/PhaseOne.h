@@ -8,11 +8,13 @@ class PhaseOne : public SceneBase
 private:
 	int time;
 	HeroData hero[2];
+	int display_count;
 public:
 	PhaseOne()
 		: SceneBase()
 		, time()
 		, hero()
+		, display_count()
 	{
 
 	}
