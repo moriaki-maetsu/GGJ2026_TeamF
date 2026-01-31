@@ -1,8 +1,8 @@
 #pragma once
 #include "../Utility/Geometry.h"
 
-#define HERO_SIZE_X	(10)
-#define HERO_SIZE_Y	(10)
+#define HERO_SIZE_X	(40)
+#define HERO_SIZE_Y	(120)
 
 enum class eColor : unsigned char
 {
