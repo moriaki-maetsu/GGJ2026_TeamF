@@ -15,107 +15,107 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Application\Application.cpp">
+    <ClCompile Include="Source\Application\Application.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\SceneFactory.cpp">
+    <ClCompile Include="Source\Scene\SceneFactory.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\SceneManager.cpp">
+    <ClCompile Include="Source\Scene\SceneManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\AssetContainer.cpp">
+    <ClCompile Include="Source\Utility\AssetContainer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\Geometry.cpp">
+    <ClCompile Include="Source\Utility\Geometry.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Utility\InputManager.cpp">
+    <ClCompile Include="Source\Utility\InputManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="AppMain.cpp">
+    <ClCompile Include="Source\AppMain.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Objects\GameObjectManager.cpp">
+    <ClCompile Include="Source\Objects\GameObjectManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\Ending\EndingScene.cpp">
+    <ClCompile Include="Source\Scene\Ending\EndingScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\PhaseOne\PhaseOne.cpp">
+    <ClCompile Include="Source\Scene\PhaseOne\PhaseOne.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\Result\ResultScene.cpp">
+    <ClCompile Include="Source\Scene\Result\ResultScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\Title\TitleScene.cpp">
+    <ClCompile Include="Source\Scene\Title\TitleScene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\PhaseTwo\PhaseTwo.cpp">
+    <ClCompile Include="Source\Scene\PhaseTwo\PhaseTwo.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application\Application.h">
+    <ClInclude Include="Source\Application\Application.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Application\ProjectConfig.h">
+    <ClInclude Include="Source\Application\ProjectConfig.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\SceneBase.h">
+    <ClInclude Include="Source\Scene\SceneBase.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\SceneFactory.h">
+    <ClInclude Include="Source\Scene\SceneFactory.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\SceneManager.h">
+    <ClInclude Include="Source\Scene\SceneManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\SceneType.h">
+    <ClInclude Include="Source\Scene\SceneType.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\AssetContainer.h">
+    <ClInclude Include="Source\Utility\AssetContainer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\Collision.h">
+    <ClInclude Include="Source\Utility\Collision.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\Geometry.h">
+    <ClInclude Include="Source\Utility\Geometry.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\InputManager.h">
+    <ClInclude Include="Source\Utility\InputManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Utility\Singleton.h">
+    <ClInclude Include="Source\Utility\Singleton.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
+    <ClInclude Include="Source\resource.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\GameObject.h">
+    <ClInclude Include="Source\Objects\GameObject.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Objects\GameObjectManager.h">
+    <ClInclude Include="Source\Objects\GameObjectManager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\Ending\EndingScene.h">
+    <ClInclude Include="Source\Scene\Ending\EndingScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\PhaseOne\PhaseOne.h">
+    <ClInclude Include="Source\Scene\PhaseOne\PhaseOne.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\Result\ResultScene.h">
+    <ClInclude Include="Source\Scene\Result\ResultScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\Title\TitleScene.h">
+    <ClInclude Include="Source\Scene\Title\TitleScene.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\PhaseTwo\PhaseTwo.h">
+    <ClInclude Include="Source\Scene\PhaseTwo\PhaseTwo.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Objects\GameObjectManager.inl">
+    <None Include="Source\Objects\GameObjectManager.inl">
       <Filter>ヘッダー ファイル</Filter>
     </None>
   </ItemGroup>
