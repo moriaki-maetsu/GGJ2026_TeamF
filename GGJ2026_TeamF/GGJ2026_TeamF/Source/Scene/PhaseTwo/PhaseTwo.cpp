@@ -5,10 +5,11 @@
 
 void PhaseTwo::Initialize()
 {
-	int red = AssetContainer::Get()->GetImages("character_red_02.png")[0];
-	int blue = AssetContainer::Get()->GetImages("character_blue_02.png")[0];
-	int green = AssetContainer::Get()->GetImages("character_green_02.png")[0];
-	int pink = AssetContainer::Get()->GetImages("character_pink_02.png")[0];
+    AssetContainer* ac = AssetContainer::Get();
+	int red = ac->GetImages("character_red_02.png")[0];
+	int blue = ac->GetImages("character_blue_02.png")[0];
+	int green = ac->GetImages("character_green_02.png")[0];
+	int pink = ac->GetImages("character_pink_02.png")[0];
 
     int i = 0;
     for (int j = 0; j < 4; j++)
@@ -32,6 +33,21 @@ eSceneType PhaseTwo::Update(float delta_second)
     layoutHeroes();
     CollisionCheck();
 
+    heros.erase(
+        std::remove_if(heros.begin(), heros.end(),
+            [](const PhaseTwoHeros& h) {
+                return h.is_delete;
+            }
+        ),
+        heros.end()
+    );
+
+    // ヒーローが残っていなかったら
+    if (heros.empty())
+    {
+        gameend = true;
+    }
+
     if (gameend)
     {
         return eSceneType::eResult;
@@ -45,7 +61,7 @@ void PhaseTwo::Draw() const
 {
     const float left_limit = 200.0f;
     const float right_limit = 1000.0f;
-    const float img_h = 400.0f;
+    const int img_h = 400;
 
     DrawLineAA(left_limit, 0.0f, left_limit, HERO_SIZE_Y * 2.0f, 0xFFFFFF, 5.0f);
     DrawLineAA(right_limit, 0.0f, right_limit, HERO_SIZE_Y * 2.0f, 0xFFFFFF, 5.0f);
@@ -59,13 +75,14 @@ void PhaseTwo::Draw() const
         DrawRectExtendGraphF(
             hero.draw_l, hero.draw_u,
             hero.draw_r, hero.draw_d,
-            hero.src_x, 0.0f,
-            hero.src_w, img_h,
+            (int)hero.src_x, 0,
+            (int)hero.src_w, img_h,
             hero.data.image, TRUE
         );
 
         DrawFormatStringF(hero.draw_l, hero.draw_d + 5.0f, 0xFFFF00, "Index: %d", i);
         DrawFormatStringF(hero.draw_l, hero.draw_d + 20.0f, 0xFFFF00, "Power: %d", hero.data.power);
+        // 当たり判定
         DrawBoxAA(hero.draw_l, hero.draw_u, hero.draw_r, hero.draw_d, 0xFFFFFF, FALSE);
     }
 
@@ -75,12 +92,14 @@ void PhaseTwo::Draw() const
         const PhaseTwoHeros* select = select_heros[i];
         Vector2D position{ 100.0f * (i + 1), 500.0f };
         DrawRotaGraphF(position.x, position.y, 0.5f, 0.0f, select->data.image, TRUE);
+        // 当たり判定
+        DrawBoxAA(position.x - HERO_SIZE_X, position.y - HERO_SIZE_Y, position.x + HERO_SIZE_X, position.y + HERO_SIZE_Y, 0xFFFFFF, FALSE);
     }
-    DrawFormatStringF(150.0f, 400.0f, 0xffffff, "合計パワー:%d", totalpower);
+    DrawFormatStringF(150.0f, 380.0f, 0xffffff, "合計パワー:%d", totalpower);
 
     // レスラーの描画
     DrawRotaGraphF(1000.0f, 500.0f, 1.f, 0.0f, wrestler_image, TRUE);
-    DrawFormatStringF(1000.0f, 400.0f, 0xffffff, "レスラーパワー:%d", wrestler_power);
+    DrawFormatStringF(1000.0f, 380.0f, 0xffffff, "レスラーパワー:%d", wrestler_power);
 
     // 戦闘スタートボタン
     DrawRotaGraphF(640.0f, 360.0f, 1.f, 0.0f, start_image, FALSE);
@@ -222,37 +241,56 @@ void PhaseTwo::CollisionCheck()
                 {
                     select_heros.push_back(&hero);
                     hero.is_selected = true;
-
-                    int total = 0;
-                    for (const PhaseTwoHeros* select : select_heros)
-                    {
-                        total += select->data.power;
-                    }
-                    totalpower = total;
                 }
             }
         }
+
+        // 戦闘するヒーローが押されたか判定
+        int i = 0; // カウンターを用意
+        select_heros.erase(
+            std::remove_if(select_heros.begin(), select_heros.end(), [&](PhaseTwoHeros* hero) {
+                // 1. このヒーローが「場」で表示されるべき位置を計算
+                // i 番目のヒーローとして位置を特定する
+                Vector2D position{ 100.0f * (i + 1), 500.0f };
+
+                // 判定が終わる前にカウンターを進める
+                i++;
+
+                // 2. 計算した position を使って当たり判定
+                Vector2D lu = { position.x - HERO_SIZE_X, position.y - HERO_SIZE_Y };
+                Vector2D rd = { position.x + HERO_SIZE_X, position.y + HERO_SIZE_Y };
+
+                // 3. クリックされたか判定
+                if (mx >= lu.x && mx <= rd.x && my >= lu.y && my <= rd.y)
+                {
+                    // 消す前にフラグを戻す
+                    hero->is_selected = false;
+                    return true; // 削除
+                }
+                return false; // 保持
+                }),
+            select_heros.end()
+        );
 
         // vsが押されたか判定
         if (mx >= 640.0f - 128.0f && mx <= 640.0f + 128.0f &&
             my >= 360.0f - 128.0f && my <= 360.0f + 128.0f)
         {
-            if (totalpower > wrestler_power)
+            if (totalpower >= wrestler_power)
             {
                 // 勝ち
+                SetNextWrestler();
                 wrestler_count++;
-                wrestler_power += 10;
+                totalpower = 0;
+                scrollx = 0.0f;
 
-                for (int i = 0; i < select_heros.size(); i++)
+                // ヒーロー消去フラグ
+                for (PhaseTwoHeros* hero_ptr : select_heros)
                 {
-                    // 消したい対象のポインタ (例)
-                    PhaseTwoHeros* target = select_heros[i];
-
-                    // 削除処理
-                    select_heros.erase(
-                        std::remove(select_heros.begin(), select_heros.end(), target),
-                        select_heros.end()
-                    );
+                    if (hero_ptr != nullptr)
+                    {
+                        hero_ptr->is_delete = true;
+                    }
                 }
                 select_heros.clear();
             }
@@ -262,5 +300,26 @@ void PhaseTwo::CollisionCheck()
                 gameend = true;
             }
         }
+
+        // 合計攻撃力を再計算
+        SetTotalPower();
     }
+}
+
+void PhaseTwo::SetNextWrestler()
+{
+    // 攻撃力
+    wrestler_power += 10;
+    // 画像
+    AssetContainer* ac = AssetContainer::Get();
+}
+
+void PhaseTwo::SetTotalPower()
+{
+    int total = 0;
+    for (const PhaseTwoHeros* select : select_heros)
+    {
+        total += select->data.power;
+    }
+    totalpower = total;
 }

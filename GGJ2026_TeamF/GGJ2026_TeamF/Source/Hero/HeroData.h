@@ -6,6 +6,7 @@
 
 enum class eColor : unsigned char
 {
+	eNone,
 	eRed,
 	eBlue,
 	eGreen,
@@ -14,9 +15,9 @@ enum class eColor : unsigned char
 
 struct HeroData
 {
-	Vector2D position;		// 座標
-	eColor color;			// 色
-	int power;				// 力
-	int image;				// 画像
+	Vector2D position = { 0.0f,0.0f };		// 座標
+	eColor color = eColor::eNone;			// 色
+	int power = 0;							// 力
+	int image = -1;							// 画像
 };
 

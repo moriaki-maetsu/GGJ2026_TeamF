@@ -6,11 +6,12 @@
 class PhaseTwo : public SceneBase
 {
 private:
+	// ヒーローの情報と描画に関する構造体
     struct PhaseTwoHeros
     {
         HeroData data;
         bool is_selected;	// セレクトできるか
-		bool is_alive;		// 死んでいるか
+		bool is_delete;		// 消去するか
 
         // --- 追加: Updateで計算し、当たり判定と描画で使う変数 ---
         bool is_visible;        // 画面外でないか
@@ -19,29 +20,33 @@ private:
         float src_x, src_w;     // 元画像の切り出し情報（描画用）
     };
 
-	// ヒーローたち
-    std::vector<PhaseTwoHeros> heros;
-	// 場に出ているヒーロー
-    std::vector<PhaseTwoHeros*> select_heros;
-	// 合計パワー値
-	int totalpower;
+	// システム
+	bool gameend;		// ゲームが終了フラグ
+	float scrollx;		// スクロール量
 
-	// スクロール量
-    float scrollx;
+	// ヒーロー
+    std::vector<PhaseTwoHeros> heros;			// 変身したヒーロー
+    std::vector<PhaseTwoHeros*> select_heros;	// 戦闘するヒーロー
+	int totalpower;								// 合計パワー
 
 	// レスラー
 	int wrestler_image;	// 画像
 	int wrestler_power;	// 攻撃力
 	int wrestler_count;	// 倒した数
-
-	// 戦闘開始ボタン
-	int start_image;	// 画像
-	bool gameend;		// ゲームが終了したか
-
+	
+	// ボタン
+	int start_image;	// 戦闘開始ボタン画像
 
 public:
 	PhaseTwo()
 		: SceneBase()
+		, gameend(false)
+		, scrollx(0.0f)
+		, totalpower(0)
+		, wrestler_image(0)
+		, wrestler_power(0)
+		, wrestler_count(0)
+		, start_image(0)
 	{
 
 	}
@@ -63,8 +68,12 @@ public:
 	}
 
 private:
-	// 未選択ヒーローを横スクロール用に配置する
+	// 未選択ヒーローを横スクロール用に配置する処理
 	void layoutHeroes();
 	// 当たり判定の確認/応答する処理
 	void CollisionCheck();
+	// 次のレスラーにする処理
+	void SetNextWrestler();
+	// 合計パワーを計算する処理
+	void SetTotalPower();
 };
