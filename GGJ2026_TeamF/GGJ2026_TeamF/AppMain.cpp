@@ -18,3 +18,5 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int)
 	// 処理の終了
 	return 0;
 }
+
+//test
