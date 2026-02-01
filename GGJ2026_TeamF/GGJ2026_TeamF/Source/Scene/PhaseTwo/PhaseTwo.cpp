@@ -197,7 +197,6 @@ eSceneType PhaseTwo::Update(float delta_second)
         old_mouse_x = now_mouse_x;
     }
 
-
     float rot = -input->GetScrollWheel().y * 50.0f;
     scrollx += rot;
     if (scrollx < 0.0f)
@@ -505,25 +504,49 @@ void PhaseTwo::CheckScrollCharacterCollision()
         if (mouse.x >= left && mouse.x <= right &&
             mouse.y >= up && mouse.y <= down)
         {
-            // リストの中から「同じ色」のキャラを探し、フラグをfalseに戻す
+            // --- (既存のフラグ解除と削除処理はそのまま) ---
             for (PhaseTwoHeros* s : select_heros) {
-                if (s->data.color == hero.data.color) {
-                    s->is_selected = false;
-                }
+                if (s->data.color == hero.data.color) s->is_selected = false;
             }
-
-            // リストから「同じ色」の要素を物理的に削除
             select_heros.erase(
                 std::remove_if(select_heros.begin(), select_heros.end(),
-                    [&](const PhaseTwoHeros* s) {
-                        return s->data.color == hero.data.color;
-                    }),
+                    [&](const PhaseTwoHeros* s) { return s->data.color == hero.data.color; }),
                 select_heros.end()
             );
 
-            // 新しく追加する
+            // 新しく追加
             select_heros.push_back(&hero);
             hero.is_selected = true;
+
+            // --- ここからソート処理 ---
+
+            // 色の優先順位を定義するラムダ関数
+            auto getColorPriority = [](eColor color) {
+                switch (color) {
+                case eColor::eRed:    return 1;
+                case eColor::eBlue:   return 2;
+                case eColor::eYellow: return 3;
+                case eColor::eGreen:  return 4;
+                case eColor::ePink:   return 5;
+                default:              return 99; // その他は後ろへ
+                }
+                };
+
+            // バブルソート：ポインタの並び順を入れ替える
+            int n = (int)select_heros.size();
+            for (int i = 0; i < n - 1; ++i) {
+                for (int j = 0; j < n - i - 1; ++j) {
+                    // 隣り合う要素の優先度を比較
+                    if (getColorPriority(select_heros[j]->data.color) >
+                        getColorPriority(select_heros[j + 1]->data.color)) {
+
+                        // 要素（ポインタ）を入れ替える
+                        PhaseTwoHeros* temp = select_heros[j];
+                        select_heros[j] = select_heros[j + 1];
+                        select_heros[j + 1] = temp;
+                    }
+                }
+            }
         }
     }
 }
@@ -588,6 +611,12 @@ void PhaseTwo::SetNextWrestler()
 {
     // 攻撃力
     wrestler_power += 10;
+    
+    if (wrestler_power > 50)
+    {
+        wrestler_power = 50;
+    }
+
     wrestler_rank = 0;
     if (wrestler_power > 20)
     {
