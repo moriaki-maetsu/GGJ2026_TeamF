@@ -33,9 +33,9 @@ void PhaseTwo::Initialize()
     heros_power_ui_image = ac->GetImages("ui_power_plate_player.png")[0];           // 総攻撃力背景UI
 
     // レスラー
-	wrestler_image[0] = AssetContainer::Get()->GetImages("enemy_01.png")[0];
-	wrestler_image[1] = AssetContainer::Get()->GetImages("enemy_02.png")[0];
-	wrestler_image[2]= AssetContainer::Get()->GetImages("enemy_03.png")[0];
+	wrestler_image[0] = ac->GetImages("enemy_01.png")[0];
+	wrestler_image[1] = ac->GetImages("enemy_02.png")[0];
+	wrestler_image[2]= ac->GetImages("enemy_03.png")[0];
     wrestler_power_ui_image[0] = ac->GetImages("ui_power_plate_enemy_01.png")[0];
     wrestler_power_ui_image[1] = ac->GetImages("ui_power_plate_enemy_02.png")[0];
     wrestler_power_ui_image[2] = ac->GetImages("ui_power_plate_enemy_03.png")[0];
@@ -43,8 +43,8 @@ void PhaseTwo::Initialize()
     wrestler_rank = 0;
 
     // 戦闘ボタン
-    start_button_image[0] = AssetContainer::Get()->GetImages("ui_battle_button_start_01.png")[0];
-    start_button_image[1] = AssetContainer::Get()->GetImages("ui_battle_button_start_02.png")[0];
+    start_button_image[0] = ac->GetImages("ui_battle_button_start_01.png")[0];
+    start_button_image[1] = ac->GetImages("ui_battle_button_start_02.png")[0];
     start_position = { 640.0f,650.0f };
     start_size = { 150.0f,40.0f };    // 画像サイズの半分の値
 
@@ -59,6 +59,18 @@ void PhaseTwo::Initialize()
     now_anime = eAnimation::eNone;
     old_anime = eAnimation::eNone;
     draw_second = 0.0f;
+
+    // サウンド
+
+    bgn_battle_01 = ac->GetSound("bgn_battle_01.mp3");
+    bgn_battle_02 = ac->GetSound("bgn_battle_02.mp3");
+    bgn_battle_03 = ac->GetSound("bgn_battle_03.mp3");
+    se_battle_lose = ac->GetSound("se_battle_lose.mp3");
+    se_battle_start = ac->GetSound("se_battle_start.mp3");
+    se_battle_win = ac->GetSound("se_battle_win.mp3");
+    voice_battle_enemy_entry = ac->GetSound("voice_battle_enemy_entry.mp3");
+    voice_battle_lose = ac->GetSound("voice_battle_lose.mp3");
+    voice_battle_win = ac->GetSound("voice_battle_win.mp3");
 }
 
 eSceneType PhaseTwo::Update(float delta_second)

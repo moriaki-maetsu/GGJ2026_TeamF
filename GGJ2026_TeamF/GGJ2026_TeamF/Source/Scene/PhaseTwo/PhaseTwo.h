@@ -54,11 +54,21 @@ private:
 	int wrestler_rank;	// 敵のランク
 	int wrestler_power_ui_image[3];		// ヒーローの攻撃力ウィンドウ画像
 	
-
-
 	// 背景
 	int background;				// 背景画像
 	int conveyer_image;			// ベルトコンベア
+
+
+	// サウンド
+	int bgn_battle_01;
+	int bgn_battle_02;
+	int bgn_battle_03;
+	int se_battle_lose;
+	int se_battle_start;
+	int se_battle_win;
+	int voice_battle_enemy_entry;
+	int voice_battle_lose;
+	int voice_battle_win;
 
 
 public:

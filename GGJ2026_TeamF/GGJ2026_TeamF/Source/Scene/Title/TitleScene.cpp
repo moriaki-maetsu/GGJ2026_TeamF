@@ -41,7 +41,6 @@ void TitleScene::Initialize()
 
 eSceneType TitleScene::Update(float delta_second)
 {
-	return eSceneType::ePhaseTwo;
 	InputManager* input =InputManager::Get();
 
 	if (input->GetMouseLocation().x >= START_BUTTON_X-100 && input->GetMouseLocation().x <= START_BUTTON_X+100)
