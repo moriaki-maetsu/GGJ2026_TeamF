@@ -7,7 +7,6 @@
 class PhaseOne : public SceneBase
 {
 private:
-	int time;
 	HeroData hero[5];
 	Belt belt[5];
 	Belt belt_icon[5];
@@ -19,7 +18,6 @@ private:
 public:
 	PhaseOne()
 		: SceneBase()
-		, time()
 		, hero()
 		, belt()
 		, belt_icon()

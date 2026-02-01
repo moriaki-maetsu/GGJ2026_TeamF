@@ -103,7 +103,7 @@ void PhaseOne::Initialize()
 	belt_icon[4].position.x = YELLOW_BELT_X;
 	belt_icon[4].position.y = 600.0f;
 
-	srand((unsigned int)time);
+	srand((unsigned int)time(NULL));
 
 	display_time_count = 0;
 	display_time = 120 + rand() % 120;
@@ -398,9 +398,10 @@ void PhaseOne::Draw() const
 		if (hero[i].power != 0)
 		{
 			DrawRotaGraph(hero[i].position.x, hero[i].position.y, 1.0, 0.0, hero[i].image, TRUE);
-			Vector2D collision_LeftUpper = { hero[i].position.x - HERO_SIZE_X , hero[i].position.y - HERO_SIZE_Y };
+			DrawRotaGraph(hero[i].position.x + HERO_SIZE_X, hero[i].position.y + HERO_SIZE_Y, 0.7, 0.0, container->GetImages("ui_power_badge.png", 10, 10, 1, 120, 100)[hero[i].power - 1], TRUE);
+			/*Vector2D collision_LeftUpper = { hero[i].position.x - HERO_SIZE_X , hero[i].position.y - HERO_SIZE_Y };
 			Vector2D collision_RightLower = { hero[i].position.x + HERO_SIZE_X , hero[i].position.y + HERO_SIZE_Y };
-			DrawBox(collision_LeftUpper.x, collision_LeftUpper.y, collision_RightLower.x, collision_RightLower.y, GetColor(255, 255, 255), FALSE);
+			DrawBox(collision_LeftUpper.x, collision_LeftUpper.y, collision_RightLower.x, collision_RightLower.y, GetColor(255, 255, 255), FALSE);*/
 		}
 	}
 
@@ -416,9 +417,9 @@ void PhaseOne::Draw() const
 		if (belt[i].drag_flag)
 		{
 			DrawRotaGraph(belt[i].position.x, belt[i].position.y, 1.0, 0.0, belt[i].image, TRUE);
-			Vector2D collision_LeftUpper = { belt[i].position.x - BELT_SIZE_X , belt[i].position.y - BELT_SIZE_Y };
+			/*Vector2D collision_LeftUpper = { belt[i].position.x - BELT_SIZE_X , belt[i].position.y - BELT_SIZE_Y };
 			Vector2D collision_RightLower = { belt[i].position.x + BELT_SIZE_X , belt[i].position.y + BELT_SIZE_Y };
-			DrawBox(collision_LeftUpper.x, collision_LeftUpper.y, collision_RightLower.x, collision_RightLower.y, GetColor(255, 255, 255), FALSE);
+			DrawBox(collision_LeftUpper.x, collision_LeftUpper.y, collision_RightLower.x, collision_RightLower.y, GetColor(255, 255, 255), FALSE);*/
 		}
 	}
 
