@@ -610,11 +610,11 @@ void PhaseTwo::CheckDeselectCollision()
 void PhaseTwo::SetNextWrestler()
 {
     // UŒ‚—Í
-    wrestler_power += 10;
+    wrestler_power += 5;
     
-    if (wrestler_power > 50)
+    if (wrestler_power > 45)
     {
-        wrestler_power = 50;
+        wrestler_power = 45;
     }
 
     wrestler_rank = 0;
