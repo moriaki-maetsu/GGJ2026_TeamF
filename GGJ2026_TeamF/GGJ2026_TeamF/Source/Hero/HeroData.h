@@ -1,6 +1,7 @@
 #pragma once
 #include "../Utility/Geometry.h"
 #include "Color.h"
+#include "DxLib.h"
 
 #define HERO_SIZE_X	(45)
 #define HERO_SIZE_Y	(60)
@@ -13,5 +14,6 @@ struct HeroData
 	eColor color = eColor::eNone;			// êF
 	int power = 0;							// óÕ
 	int image = -1;							// âÊëú
+	bool change_flag = FALSE;
 };
 

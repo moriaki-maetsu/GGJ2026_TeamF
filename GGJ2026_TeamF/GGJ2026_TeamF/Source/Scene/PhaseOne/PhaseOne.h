@@ -11,7 +11,8 @@ private:
 	HeroData hero[5];
 	Belt belt[5];
 	Belt belt_icon[5];
-	int display_count;
+	int display_time_count;
+	int display_time;
 public:
 	PhaseOne()
 		: SceneBase()
@@ -19,7 +20,8 @@ public:
 		, hero()
 		, belt()
 		, belt_icon()
-		, display_count()
+		, display_time_count()
+		, display_time()
 	{
 
 	}

@@ -4,12 +4,15 @@
 #include "../../Utility/InputManager.h"
 #include "../../Hero/Heros.h"
 #include "stdlib.h"
+#include "time.h"
 
 #define RED_BELT_X (640.0f)
 #define BLUE_BELT_X (520.0f)
 #define GREEN_BELT_X (400.0f)
 #define PINK_BELT_X (880.0f)
 #define YELLOW_BELT_X (760.0f)
+#define LANE_1_Y (150.0f)
+#define LANE_2_Y (300.0f)
 
 void PhaseOne::Initialize()
 {
@@ -19,30 +22,35 @@ void PhaseOne::Initialize()
 	hero[0].position.x = 0.0f;
 	hero[0].position.y = 0.0f;
 	hero[0].power = 0;
+	hero[0].change_flag = FALSE;
 
 	hero[1].color = eColor::eBlue;
 	hero[1].image = container->GetImages("character_blue_01.png")[0];
 	hero[1].position.x = 0.0f;
 	hero[1].position.y = 0.0f;
 	hero[1].power = 0;
+	hero[1].change_flag = FALSE;
 
 	hero[2].color = eColor::eGreen;
 	hero[2].image = container->GetImages("character_green_01.png")[0];
 	hero[2].position.x = 0.0f;
 	hero[2].position.y = 0.0f;
 	hero[2].power = 0;
+	hero[2].change_flag = FALSE;
 
 	hero[3].color = eColor::ePink;
 	hero[3].image = container->GetImages("character_pink_01.png")[0];
 	hero[3].position.x = 0.0f;
 	hero[3].position.y = 0.0f;
 	hero[3].power = 0;
+	hero[3].change_flag = FALSE;
 
 	hero[4].color = eColor::eYellow;
 	hero[4].image = container->GetImages("character_yellow_01.png")[0];
 	hero[4].position.x = 0.0f;
 	hero[4].position.y = 0.0f;
 	hero[4].power = 0;
+	hero[4].change_flag = FALSE;
 
 	belt[0].color = eColor::eRed;
 	belt[0].image = container->GetImages("icon_belt_red_02.png")[0];
@@ -94,14 +102,17 @@ void PhaseOne::Initialize()
 	belt_icon[4].position.x = YELLOW_BELT_X;
 	belt_icon[4].position.y = 600.0f;
 
-	display_count = 0;
+	srand((unsigned int)time);
+
+	display_time_count = 0;
+	display_time = 120 + rand() % 120;
 }
 
 eSceneType PhaseOne::Update(float delta_second)
 {
 	AssetContainer* container = AssetContainer::Get();
 	//ヒーロー生成処理
-	if (++display_count >= 120)
+	if (++display_time_count >= display_time)
 	{
 		do
 		{
@@ -132,9 +143,17 @@ eSceneType PhaseOne::Update(float delta_second)
 							hero[i].image = container->GetImages("character_yellow_01.png")[0];
 							break;
 						}
-						hero[i].position.x = 100.0f;
-						hero[i].position.y = 200.0f;
+						hero[i].position.x = 0.0f;
+						if (rand() % 2 == 0)
+						{
+							hero[i].position.y = LANE_1_Y;
+						}
+						else
+						{
+							hero[i].position.y = LANE_2_Y;
+						}
 						hero[i].power = rand() % 5 + 1;
+						hero[i].change_flag = FALSE;
 						exit = TRUE;
 					}
 				}
@@ -147,7 +166,8 @@ eSceneType PhaseOne::Update(float delta_second)
 		} while (TRUE);
 		
 		
-		display_count = 0;
+		display_time_count = 0;
+		display_time = 120 + rand() % 120;
 	}
 
 	//ヒーロー移動処理
@@ -155,13 +175,27 @@ eSceneType PhaseOne::Update(float delta_second)
 	{
 		if (hero[i].power != 0)
 		{
-			hero[i].position.x += 3.0f;
-			if (hero[i].position.x >= 1280)
+			if (hero[i].change_flag)
 			{
-				hero[i].position.x = 0.0f;
-				hero[i].position.y = 0.0f;
-				hero[i].power = 0;
+				hero[i].position.y -= 1.0f;
+				if (hero[i].position.y <= 0.0f)
+				{
+					hero[i].position.x = 0.0f;
+					hero[i].position.y = 0.0f;
+					hero[i].power = 0;
+				}
 			}
+			else
+			{
+				hero[i].position.x += 3.0f;
+				if (hero[i].position.x >= 1280)
+				{
+					hero[i].position.x = 0.0f;
+					hero[i].position.y = 0.0f;
+					hero[i].power = 0;
+				}
+			}
+			
 		}
 	}
 
@@ -255,7 +289,7 @@ eSceneType PhaseOne::Update(float delta_second)
 				//ヒーロー変身処理
 				for (int h = 0; h < sizeof(hero) / sizeof(hero[0]); h++)
 				{
-					if (hero[h].power != 0)
+					if (hero[h].power != 0 && !(hero[h].change_flag))
 					{
 						Vector2D collision_LeftUpper = { hero[h].position.x - HERO_SIZE_X , hero[h].position.y - HERO_SIZE_Y };
 						Vector2D collision_RightLower = { hero[h].position.x + HERO_SIZE_X , hero[h].position.y + HERO_SIZE_Y };
@@ -284,9 +318,7 @@ eSceneType PhaseOne::Update(float delta_second)
 										break;
 									}
 									heros->SetHeros(hero[h]);
-									hero[h].position.x = 0.0f;
-									hero[h].position.y = 0.0f;
-									hero[h].power = 0;
+									hero[h].change_flag = TRUE;
 									break;
 								}
 							}
