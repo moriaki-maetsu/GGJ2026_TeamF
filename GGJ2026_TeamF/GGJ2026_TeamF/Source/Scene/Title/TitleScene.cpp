@@ -6,26 +6,34 @@
 #define	D_WINDOW_SIZE_X	(1280)	// Windowサイズ（幅）
 #define	D_WINDOW_SIZE_Y	(720)	// Windowサイズ（高さ）
 
-#define START_BUTTON_UPPER_X 1280/2-200
-#define START_BUTTON_LOWER_X 1280/2-50
-#define START_BUTTON_UPPER_Y 720/4*3-10
-#define START_BUTTON_LOWER_Y 720/4*3+20
+#define START_BUTTON_X 1280/2-110
+#define START_BUTTON_Y 720/4*3
 
-#define END_BUTTON_UPPER_X 1280/2+50
-#define END_BUTTON_LOWER_X 1280/2+200
-#define END_BUTTON_UPPER_Y 720/4*3-10
-#define END_BUTTON_LOWER_Y 720/4*3+20
+
+#define END_BUTTON_X 1280/2+110
+#define END_BUTTON_Y 720/4*3
+
 
 int white = GetColor(255, 255, 255);
 int black = GetColor(0, 0, 0);
 int red = GetColor(255, 0, 0);
-int startboxcolor, endboxcolor, bg_title;
+int startboxcolor, endboxcolor, bg_title, bgm_title, se_title_button, voice_start, button_start_No, button_end_No;
+int ui_button_start[2], ui_button_end[2];
 
 void TitleScene::Initialize()
 {
 	AssetContainer* container = AssetContainer::Get();
 	bg_title = container->GetImages("bg_title_01.png")[0];
+	ui_button_start[0] = container->GetImages("ui_title_start_01.png")[0];
+	ui_button_start[1] = container->GetImages("ui_title_start_02.png")[0];
+	ui_button_end[0] = container->GetImages("ui_title_end_01.png")[0];
+	ui_button_end[1] = container->GetImages("ui_title_end_02.png")[0];
 
+	bgm_title = container->GetSound("bgm_title.mp3");
+	se_title_button = container->GetSound("se_title_button.mp3");
+	voice_start = container->GetSound("voice_title_start.mp3");
+	ChangeVolumeSoundMem(255 * 30 / 100, bgm_title);
+	PlaySoundMem(bgm_title, DX_PLAYTYPE_LOOP);
 	ChangeFont("HG創英角ｺﾞｼｯｸUB");
 	SetFontSize(30);
 	
@@ -35,33 +43,41 @@ eSceneType TitleScene::Update(float delta_second)
 {
 	InputManager* input =InputManager::Get();
 
-	if (input->GetMouseLocation().x >= START_BUTTON_UPPER_X && input->GetMouseLocation().x <= START_BUTTON_LOWER_X)
+	if (input->GetMouseLocation().x >= START_BUTTON_X-100 && input->GetMouseLocation().x <= START_BUTTON_X+100)
 	{
-		if (input->GetMouseLocation().y >= START_BUTTON_UPPER_Y && input->GetMouseLocation().y <= START_BUTTON_LOWER_Y)
+		if (input->GetMouseLocation().y >= START_BUTTON_Y-45 && input->GetMouseLocation().y <= START_BUTTON_Y+45)
 		{
-			startboxcolor = red;
+			if (button_start_No != 1)
+			{
+				PlaySoundMem(se_title_button, DX_PLAYTYPE_BACK);
+			}
+			button_start_No = 1;
 
 			if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
 			{
-				
+				PlaySoundMem(voice_start, DX_PLAYTYPE_NORMAL);
 				return eSceneType::ePhaseOne;
 			}
 		}
 		else
 		{
-			startboxcolor = white;
+			button_start_No = 0;
 		}
 	}
 	else
 	{
-		startboxcolor = white;
+		button_start_No = 0;
 	}
 
-	if (input->GetMouseLocation().x >= END_BUTTON_UPPER_X && input->GetMouseLocation().x <= END_BUTTON_LOWER_X)
+	if (input->GetMouseLocation().x >= END_BUTTON_X-100 && input->GetMouseLocation().x <= END_BUTTON_X+100)
 	{
-		if (input->GetMouseLocation().y >= END_BUTTON_UPPER_Y && input->GetMouseLocation().y <= END_BUTTON_LOWER_Y)
+		if (input->GetMouseLocation().y >= END_BUTTON_Y-45 && input->GetMouseLocation().y <= END_BUTTON_Y+45)
 		{
-			endboxcolor = red;
+			if (button_end_No != 1)
+			{
+				PlaySoundMem(se_title_button, DX_PLAYTYPE_BACK);
+			}
+			button_end_No = 1;
 
 			if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
 			{
@@ -70,13 +86,15 @@ eSceneType TitleScene::Update(float delta_second)
 		}
 		else
 		{
-			endboxcolor = white;
+			button_end_No = 0;
 		}
 	}
 	else
 	{
-		endboxcolor = white;
+		button_end_No = 0;
 	}
+
+
 	
 
 
@@ -87,13 +105,14 @@ eSceneType TitleScene::Update(float delta_second)
 void TitleScene::Draw() const
 {
 	DrawRotaGraph(1280 / 2, 720 / 2, 1.0, 0.0, bg_title, TRUE);
-	DrawBox(START_BUTTON_UPPER_X, START_BUTTON_UPPER_Y, START_BUTTON_LOWER_X, START_BUTTON_LOWER_Y, startboxcolor, TRUE);
-	DrawBox(END_BUTTON_UPPER_X, END_BUTTON_UPPER_Y, END_BUTTON_LOWER_X, END_BUTTON_LOWER_Y, endboxcolor, TRUE);
-	DrawString(START_BUTTON_UPPER_X+15, START_BUTTON_UPPER_Y, "スタート", black);
-	DrawString(END_BUTTON_UPPER_X+25, END_BUTTON_UPPER_Y, "エンド", black);
+	DrawRotaGraph(START_BUTTON_X, START_BUTTON_Y, 1.0, 0.0, ui_button_start[button_start_No], TRUE);
+	DrawRotaGraph(END_BUTTON_X, END_BUTTON_Y, 1.0, 0.0, ui_button_end[button_end_No], TRUE);
+
+	
 	
 }
 
 void TitleScene::Finalize()
 {
+	StopSoundMem(bgm_title);
 }
