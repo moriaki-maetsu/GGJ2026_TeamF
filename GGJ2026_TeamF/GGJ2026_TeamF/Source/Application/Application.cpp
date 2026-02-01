@@ -61,17 +61,20 @@ void Application::Run()
 		// メインループ
 		while (ProcessMessage() == 0 && execute_flag)
 		{
-			
-
-			// 入力情報の更新
-			InputManager* input = InputManager::Get();
-			input->Update();
-
 			// 1フレーム当たりの時間を計測する
 			DeltaSecondMeasure();
 
-			// シーンの更新と描画
-			execute_flag = scene_manager->Update(delta_second);
+			if (delta_second >= (1.0f / 60.0f))
+			{
+				// 入力情報の更新
+				InputManager* input = InputManager::Get();
+				input->Update();
+
+				// シーンの更新と描画
+				execute_flag = scene_manager->Update(delta_second);
+
+				delta_second -= 1.0f / 60.0f;
+			}
 
 			// 終了確認
 			CheckExecute();
@@ -97,17 +100,21 @@ void Application::Close()
 
 void Application::DeltaSecondMeasure()
 {
+	LONGLONG now = GetNowHiPerformanceCount();
+	
 	// PCが起動してからの経過時間を取得
 	static LONGLONG	elapsed_time = GetNowHiPerformanceCount();	
 
 	// １フレーム当たりの経過時間（μ秒）を計算
-	LONGLONG took = GetNowHiPerformanceCount() - elapsed_time;
+	LONGLONG took = now - elapsed_time;
 
 	// μ秒から秒に分解能を変換する
-	delta_second = static_cast<float>(took) * 1.0e-6f;
+	delta_second += static_cast<float>(took) * 1.0e-6f;
 	
 	// PCが起動してからの経過時間を更新する
-	elapsed_time = GetNowHiPerformanceCount();
+	elapsed_time = now;
+
+	
 
 }
 

@@ -8,6 +8,14 @@
 class PhaseTwo : public SceneBase
 {
 private:
+	enum eAnimation
+	{
+		eNone,
+		eBattle,
+		eWin,
+		eLose,
+	};
+
 	// ヒーローの情報と描画に関する構造体
     struct PhaseTwoHeros
     {
@@ -16,17 +24,28 @@ private:
 		bool is_delete;		// 消去するか
     };
 
-	// システム
+	// ゲームシステム
 	bool gameend;		// ゲーム終了フラグ
 	float scrollx;		// スクロール量
+	std::vector<int> power_number_image;	// パワー表示の数字画像
+	int win_image;							// 勝利画像
+	int lose_image;							// 敗北画像
+	float animation_count;		// カウント
+	int animation_num;			// 何番目か
+	eAnimation now_anime;		// 何を描画するか
+	eAnimation old_anime;		// 何を描画していたか
+	float draw_second;			// 描画する時間
+	int start_button_image[2];	// 戦闘開始ボタン画像
+	Vector2D start_position;	// スタート描画座標
+	Vector2D start_size;		// ボタンの大きさ
+	bool is_start_push;			// 押されているか
 
 	// ヒーロー
     std::vector<PhaseTwoHeros> heros;			// 変身したヒーロー
     std::vector<PhaseTwoHeros*> select_heros;	// 戦闘するヒーロー
-	std::vector<int> power_badge_image;			// パワーの画像
+	std::vector<int> power_badge_image;			// パワーのバッジ画像
 	int totalpower;								// 合計パワー
-	int heros_power_ui_image;		// ヒーローの攻撃力ウィンドウ画像
-
+	int heros_power_ui_image;					// ヒーローの攻撃力ウィンドウ画像
 
 	// レスラー
 	int wrestler_image[3];	// 画像
@@ -35,16 +54,12 @@ private:
 	int wrestler_rank;	// 敵のランク
 	int wrestler_power_ui_image[3];		// ヒーローの攻撃力ウィンドウ画像
 	
-	// ボタン
-	int start_image[2];			// 戦闘開始ボタン画像
-	Vector2D start_position;	// 描画座標
-	Vector2D start_size;		// ボタンの大きさ
-	bool is_start_push;			// 押されているか
+
 
 	// 背景
 	int background;				// 背景画像
 	int conveyer_image;			// ベルトコンベア
-	std::vector<int> power_number_image;	// パワー表示の数字画像
+
 
 public:
 	PhaseTwo()
@@ -55,7 +70,7 @@ public:
 		, wrestler_image{0}
 		, wrestler_power(0)
 		, wrestler_count(0)
-		, start_image{0}
+		, start_button_image{0}
 		, is_start_push(false)
 	{
 

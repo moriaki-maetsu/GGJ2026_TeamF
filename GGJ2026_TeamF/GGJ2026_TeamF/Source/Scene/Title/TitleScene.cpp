@@ -35,12 +35,13 @@ void TitleScene::Initialize()
 	ChangeVolumeSoundMem(255 * 30 / 100, bgm_title);
 	PlaySoundMem(bgm_title, DX_PLAYTYPE_LOOP);
 	ChangeFont("HG創英角ｺﾞｼｯｸUB");
-	SetFontSize(30);
+	//SetFontSize(30);
 	
 }
 
 eSceneType TitleScene::Update(float delta_second)
 {
+	return eSceneType::ePhaseTwo;
 	InputManager* input =InputManager::Get();
 
 	if (input->GetMouseLocation().x >= START_BUTTON_X-100 && input->GetMouseLocation().x <= START_BUTTON_X+100)

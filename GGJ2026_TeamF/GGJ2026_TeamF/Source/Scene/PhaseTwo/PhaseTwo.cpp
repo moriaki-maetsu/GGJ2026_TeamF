@@ -29,30 +29,6 @@ void PhaseTwo::Initialize()
 
     AssetContainer* ac = AssetContainer::Get();
 
-    if (heros.empty())
-    {
-        int red = ac->GetImages("character_red_02.png")[0];
-        int blue = ac->GetImages("character_blue_02.png")[0];
-        int green = ac->GetImages("character_green_02.png")[0];
-        int pink = ac->GetImages("character_pink_02.png")[0];
-        int yellow = ac->GetImages("character_yellow_02.png")[0];
-
-        int i = 1;
-        for (int j = 0; j < 4; j++)
-        {
-            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eRed,(i++) % 10,red }, false, false });
-            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eBlue,(i++) % 10,blue }, false, false });
-            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eGreen,(i++) % 10,green }, false, false });
-            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::ePink,(i++) % 10,pink }, false, false });
-            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eYellow,(i++) % 10,yellow }, false, false });
-        }
-    }
-
-    for (int i = 0; i < heros.size(); i++)
-    {
-        heros[i].data.position.y = 80.0f;
-    }
-
     power_badge_image = ac->GetImages("ui_power_badge.png", 10, 10, 1, 120, 100);   // 攻撃力バッジ
     heros_power_ui_image = ac->GetImages("ui_power_plate_player.png")[0];           // 総攻撃力背景UI
 
@@ -67,8 +43,8 @@ void PhaseTwo::Initialize()
     wrestler_rank = 0;
 
     // 戦闘ボタン
-    start_image[0] = AssetContainer::Get()->GetImages("ui_battle_button_start_01.png")[0];
-    start_image[1] = AssetContainer::Get()->GetImages("ui_battle_button_start_02.png")[0];
+    start_button_image[0] = AssetContainer::Get()->GetImages("ui_battle_button_start_01.png")[0];
+    start_button_image[1] = AssetContainer::Get()->GetImages("ui_battle_button_start_02.png")[0];
     start_position = { 640.0f,650.0f };
     start_size = { 150.0f,40.0f };    // 画像サイズの半分の値
 
@@ -76,14 +52,91 @@ void PhaseTwo::Initialize()
     background = ac->GetImages("bg_battle_01.png")[0];
     conveyer_image = ac->GetImages("conveyer.png")[0];
     power_number_image = ac->GetImages("ui_number_02.png", 11, 11, 1, 34, 68);
-
+    win_image = ac->GetImages("ui_battle_win.png")[0];
+    lose_image = ac->GetImages("ui_battle_lose.png")[0];
+    animation_count = 0.0f;
+    animation_num = 0;
+    now_anime = eAnimation::eNone;
+    old_anime = eAnimation::eNone;
+    draw_second = 0.0f;
 }
 
 eSceneType PhaseTwo::Update(float delta_second)
 {
+    animation_count += delta_second;
+    if (animation_count > 0.1f)
+    {
+        animation_count -= 0.1f;
+        animation_num++;
+    }
+
+    if (draw_second > 0.001f)
+    {
+        draw_second -= delta_second;
+    }
+    else if (old_anime != now_anime)
+    {
+        old_anime = now_anime;
+        switch (now_anime)
+        {
+        case eNone:
+            now_anime = eAnimation::eNone;
+            is_start_push = false;
+            select_heros.clear();
+
+            // 死んだヒーローを配列から消去
+            heros.erase(
+                std::remove_if(heros.begin(), heros.end(),
+                    [](const PhaseTwoHeros& h) {
+                        return h.is_delete;
+                    }
+                ),
+                heros.end()
+            );
+
+            break;
+
+        case eBattle:
+            if (totalpower >= wrestler_power)
+            {
+                // 勝ち
+                SetNextWrestler();
+                wrestler_count++;
+                totalpower = 0;
+                scrollx = 0.0f;
+                now_anime = eAnimation::eWin;
+                draw_second = 2.0f;
+
+                // ヒーロー消去フラグ
+                for (PhaseTwoHeros* hero_ptr : select_heros)
+                {
+                    if (hero_ptr != nullptr)
+                    {
+                        hero_ptr->is_delete = true;
+                    }
+                }
+            }
+            else
+            {
+                now_anime = eAnimation::eLose;
+                draw_second = 2.0f;
+            }
+
+            break;
+        case eLose:
+            gameend = true;
+
+            break;
+        case eWin:
+            now_anime = eAnimation::eNone;
+            break;
+        }
+    }
+
+
     InputManager* input = InputManager::Get();
 
-    float rot = -input->GetScrollWheel().y * 40.0f;
+    float rot = -input->GetScrollWheel().y * 50.0f;
     scrollx += rot;
     if (scrollx < 0.0f)
         scrollx += TOTAL_LOOP_WIDTH;
@@ -92,16 +145,6 @@ eSceneType PhaseTwo::Update(float delta_second)
 
     // 当たり判定の確認処理
     CheckCollision();
-
-    // 死んだヒーローを配列から消去
-    heros.erase(
-        std::remove_if(heros.begin(), heros.end(),
-            [](const PhaseTwoHeros& h) {
-                return h.is_delete;
-            }
-        ),
-        heros.end()
-    );
 
     // スクロールキャラの座標を再計算
     for (int i = 0; i < heros.size(); i++)
@@ -130,47 +173,6 @@ void PhaseTwo::Draw() const
     DrawRotaGraphF(640.0f, 360.0f, 1.f, 0.0f, background, TRUE);
     // ベルトコンベア
     DrawRotaGraphF(640.0f, 80.0f, 0.35f, 0.0f, conveyer_image, TRUE);
-    // レスラーの攻撃力背景UI
-    DrawRotaGraphF(900.0f, 270.0f, 1.0f, 0.0f, wrestler_power_ui_image[wrestler_rank], TRUE);
-    // 合計攻撃力の背景UI
-    DrawRotaGraphF(400.0f, 270.0f, 1.0f, 0.0f, heros_power_ui_image, TRUE);
-    // 合計攻撃力
-    int temp_power = totalpower;
-    float draw_x = 480.0f; // 描画の基準位置（1の位の位置）
-    float spacing = 16.0f; // 数字同士の間隔
-
-    // 最低でも1回は実行（0の場合でも0を表示）
-    do {
-        // 1. 一番下の桁を取り出す (例: 123 -> 3)
-        int digit = temp_power % 10;
-
-        // 2. その桁の画像を描画
-        DrawRotaGraphF(draw_x, 275.0f, 0.5f, 0.0f, power_number_image[digit], TRUE);
-
-        // 3. 次の桁のために描画位置を左にずらし、数値を10で割る
-        draw_x -= spacing;
-        temp_power /= 10;
-
-    } while (temp_power > 0);
-
-    // レスラーの攻撃力
-    temp_power = wrestler_power;
-    draw_x = 980.0f; // 描画の基準位置（1の位の位置）
-    spacing = 16.0f; // 数字同士の間隔
-
-    // 最低でも1回は実行（0の場合でも0を表示）
-    do {
-        // 1. 一番下の桁を取り出す (例: 123 -> 3)
-        int digit = temp_power % 10;
-
-        // 2. その桁の画像を描画
-        DrawRotaGraphF(draw_x, 290.0f, 0.5f, 0.0f, power_number_image[digit], TRUE);
-
-        // 3. 次の桁のために描画位置を左にずらし、数値を10で割る
-        draw_x -= spacing;
-        temp_power /= 10;
-
-    } while (temp_power > 0);
 
 
     DrawLineAA(LIMIT_LEFT, 0.0f, LIMIT_LEFT, HERO_SIZE_Y * 2.0f, 0xFFFFFF, 5.0f);
@@ -181,9 +183,9 @@ void PhaseTwo::Draw() const
         const PhaseTwoHeros& hero = heros[i];
 
         if (hero.is_selected) continue;
-        
+
         float world_x = hero.data.position.x - scrollx;
-            
+
         // 2. TOTAL_LOOP_WIDTH の範囲内に座標を収める (0 ～ TOTAL_LOOP_WIDTH)
         // これにより、scrollxがどれだけ増減しても、相対位置がループします
         float draw_center_x = fmodf(world_x, TOTAL_LOOP_WIDTH);
@@ -219,7 +221,7 @@ void PhaseTwo::Draw() const
         if (right > LIMIT_RIGHT)
         {
             float cut_px = right - LIMIT_RIGHT;
-            float src_cut = cut_px * (HERO_IMAGE_SIZE_X / (right - left));
+            float src_cut = cut_px * (HERO_IMAGE_SIZE_X / (left - right));
             right = LIMIT_RIGHT;
             src_w -= (int)src_cut;
         }
@@ -235,57 +237,118 @@ void PhaseTwo::Draw() const
 
         // 強さの描画
         Vector2D badgeoffset = { -20.0f,-30.0f };
-        //DrawRotaGraphF(right + badgeoffset.x, down + badgeoffset.y, 0.7f, 0.0f, power_badge_image[hero.data.power], TRUE);
-        DrawRotaGraphF(world_x - HERO_SIZE_Y + badgeoffset.x, down + badgeoffset.y, 0.7f, 0.0f, power_badge_image[hero.data.power], TRUE);
+        DrawRotaGraphF(right + badgeoffset.x, down + badgeoffset.y, 0.7f, 0.0f, power_badge_image[hero.data.power - 1], TRUE);
 
 
         // 当たり判定
-        DrawBoxAA(left, up, right, down, 0xFFFFFF, FALSE);
+        //DrawBoxAA(left, up, right, down, 0xFFFFFF, FALSE);
         // データの描画
         //DrawFormatStringF(left, down + 5.0f, 0xFFFF00, "Index: %d", i);
         //DrawFormatStringF(left, down + 20.0f, 0xFFFF00, "Power: %d", hero.data.power);
     }
 
-    // 場に出ているのヒーローの描画
-    for (size_t i = 0; i < select_heros.size(); i++)
+    if (now_anime != eAnimation::eLose)
     {
-        const PhaseTwoHeros* select = select_heros[i];
-        Vector2D position = { 0.0f,0.0f };
+        // 合計攻撃力の背景UI
+        DrawRotaGraphF(400.0f, 270.0f, 1.0f, 0.0f, heros_power_ui_image, TRUE);
+        // 合計攻撃力
+        int temp_power = totalpower;
+        float draw_x = 480.0f; // 描画の基準位置（1の位の位置）
+        float spacing = 16.0f; // 数字同士の間隔
 
-        Vector2D center = { 500.0f,500.0f };
+        // 最低でも1回は実行（0の場合でも0を表示）
+        do {
+            // 1. 一番下の桁を取り出す (例: 123 -> 3)
+            int digit = temp_power % 10;
 
-        switch (i)
+            // 2. その桁の画像を描画
+            DrawRotaGraphF(draw_x, 275.0f, 0.5f, 0.0f, power_number_image[digit], TRUE);
+
+            // 3. 次の桁のために描画位置を左にずらし、数値を10で割る
+            draw_x -= spacing;
+            temp_power /= 10;
+
+        } while (temp_power > 0);
+        // 場に出ているのヒーローの描画
+        for (size_t i = 0; i < select_heros.size(); i++)
         {
-        case 0:
-            position = center;
-            break;
-        case 1:
-            position = { center.x - 120,center.y - 60 };
-            break;
-        case 2:
-            position = { center.x - 120,center.y + 60 };
-            break;
-        case 3:
-            position = { center.x - 240,center.y - 120 };
-            break;
-        case 4:
-            position = { center.x - 240,center.y + 120 };
-            break;
+            const PhaseTwoHeros* select = select_heros[i];
+            Vector2D position = { 0.0f,0.0f };
+
+            Vector2D center = { 500.0f,500.0f };
+
+            switch (i)
+            {
+            case 0:
+                position = center;
+                break;
+            case 1:
+                position = { center.x - 120,center.y - 60 };
+                break;
+            case 2:
+                position = { center.x - 120,center.y + 60 };
+                break;
+            case 3:
+                position = { center.x - 240,center.y - 120 };
+                break;
+            case 4:
+                position = { center.x - 240,center.y + 120 };
+                break;
+            }
+            DrawRotaGraphF(position.x, position.y, 1.2f, 0.0f, select->data.image, TRUE);
+            Vector2D badgeoffset = { -20.0f,-30.0f };
+            DrawRotaGraphF(position.x + HERO_SIZE_X + badgeoffset.x, position.y + HERO_SIZE_Y + badgeoffset.y, 0.84f, 0.0f, power_badge_image[select->data.power - 1], TRUE);
+            //DrawFormatStringF(position.x + HERO_SIZE_X + badgeoffset.x, position.y + HERO_SIZE_Y + badgeoffset.y-100.0f, 0xffffff, "パワー:%d", select->data.power);
+
+            // 当たり判定
+            //DrawBoxAA(position.x - HERO_SIZE_X, position.y - HERO_SIZE_Y, position.x + HERO_SIZE_X, position.y + HERO_SIZE_Y, 0xFFFFFF, FALSE);
         }
-        DrawRotaGraphF(position.x, position.y, 1.2f, 0.0f, select->data.image, TRUE);
-        Vector2D badgeoffset = { -20.0f,-30.0f };
-        DrawRotaGraphF(position.x+HERO_SIZE_X + badgeoffset.x, position.y+HERO_SIZE_Y + badgeoffset.y, 0.84f, 0.0f, power_badge_image[select_heros[i]->data.power], TRUE);
-        // 当たり判定
-        //DrawBoxAA(position.x - HERO_SIZE_X, position.y - HERO_SIZE_Y, position.x + HERO_SIZE_X, position.y + HERO_SIZE_Y, 0xFFFFFF, FALSE);
+        //DrawFormatStringF(150.0f, 380.0f, 0xffffff, "合計パワー:%d", totalpower);
     }
-    //DrawFormatStringF(150.0f, 380.0f, 0xffffff, "合計パワー:%d", totalpower);
 
-    // レスラーの描画
-    DrawRotaGraphF(900.0f, 500.0f, 0.5f, 0.0f, wrestler_image[wrestler_rank], TRUE);
-    //DrawFormatStringF(1000.0f, 380.0f, 0xffffff, "レスラーパワー:%d", wrestler_power);
+    if (now_anime != eAnimation::eWin)
+    {
 
-    // 戦闘スタートボタン
-    DrawRotaGraphF(start_position.x, start_position.y, 1.f, 0.0f, start_image[is_start_push ? 1 : 0], TRUE);
+        // レスラーの攻撃力
+        int temp_power = wrestler_power;
+        float draw_x = 980.0f; // 描画の基準位置（1の位の位置）
+        float spacing = 16.0f; // 数字同士の間隔
+        // レスラーの攻撃力背景UI
+        DrawRotaGraphF(900.0f, 270.0f, 1.0f, 0.0f, wrestler_power_ui_image[wrestler_rank], TRUE);
+
+        // 最低でも1回は実行（0の場合でも0を表示）
+        do {
+            // 1. 一番下の桁を取り出す (例: 123 -> 3)
+            int digit = temp_power % 10;
+
+            // 2. その桁の画像を描画
+            DrawRotaGraphF(draw_x, 290.0f, 0.5f, 0.0f, power_number_image[digit], TRUE);
+
+            // 3. 次の桁のために描画位置を左にずらし、数値を10で割る
+            draw_x -= spacing;
+            temp_power /= 10;
+
+        } while (temp_power > 0);
+
+
+        // レスラーの描画
+        DrawRotaGraphF(900.0f, 500.0f, 0.5f, 0.0f, wrestler_image[wrestler_rank], TRUE);
+        //DrawFormatStringF(1000.0f, 380.0f, 0xffffff, "レスラーパワー:%d", wrestler_power);
+    }
+
+    switch (now_anime)
+    {
+    case eNone:
+    case eBattle:
+        DrawRotaGraphF(start_position.x, start_position.y, 1.f, 0.0f, start_button_image[is_start_push ? 1 : 0], TRUE);
+        break;
+    case eWin:
+        DrawRotaGraphF(start_position.x, 400.0f, 1.f, 0.0f, win_image, TRUE);
+        break;
+    case eLose:
+        DrawRotaGraphF(start_position.x, 400.0f, 1.f, 0.0f, lose_image, TRUE);
+        break;
+    }
 }
 
 void PhaseTwo::Finalize()
@@ -296,48 +359,31 @@ void PhaseTwo::CheckCollision()
 {
     InputManager* input = InputManager::Get();
 
-    // マウスが押された時の処理
-    if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
+    if(now_anime==eAnimation::eNone)
     {
-        // スクロールキャラクターの判定を行う
-        CheckScrollCharacterCollision();
-        // 場に出ているキャラクターの判定を行う
-        CheckDeselectCollision();
-
-        Vector2D mouse = input->GetMouseLocation();
-
-        // vsが押されたか判定
-        if (mouse.x >= start_position.x - start_size.x && mouse.x <= start_position.x + start_size.x &&
-            mouse.y >= start_position.y - start_size.y && mouse.y <= start_position.y + start_size.y)
+        // マウスが押された時の処理
+        if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick
+            && now_anime == eAnimation::eNone)
         {
-            is_start_push = true;
-            if (totalpower >= wrestler_power)
-            {
-                // 勝ち
-                SetNextWrestler();
-                wrestler_count++;
-                totalpower = 0;
-                scrollx = 0.0f;
+            // スクロールキャラクターの判定を行う
+            CheckScrollCharacterCollision();
+            // 場に出ているキャラクターの判定を行う
+            CheckDeselectCollision();
 
-                // ヒーロー消去フラグ
-                for (PhaseTwoHeros* hero_ptr : select_heros)
-                {
-                    if (hero_ptr != nullptr)
-                    {
-                        hero_ptr->is_delete = true;
-                    }
-                }
-                select_heros.clear();
-            }
-            else
+            Vector2D mouse = input->GetMouseLocation();
+
+            // vsが押されたか判定
+            if (mouse.x >= start_position.x - start_size.x && mouse.x <= start_position.x + start_size.x &&
+                mouse.y >= start_position.y - start_size.y && mouse.y <= start_position.y + start_size.y)
             {
-                // 負け
-                gameend = true;
+                now_anime = eAnimation::eBattle;
+                draw_second = 0.1f;
+                is_start_push = true;
             }
+
+            // 合計攻撃力を再計算
+            SetTotalPower();
         }
-
-        // 合計攻撃力を再計算
-        SetTotalPower();
     }
 }
 
