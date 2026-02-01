@@ -74,6 +74,7 @@ void PhaseOne::Initialize()
 
 eSceneType PhaseOne::Update(float delta_second)
 {
+	AssetContainer* container = AssetContainer::Get();
 	//ヒーロー生成処理
 	if (++display_count >= 120)
 	{
@@ -88,6 +89,24 @@ eSceneType PhaseOne::Update(float delta_second)
 				{
 					if (hero[form_num].power == 0)
 					{
+						switch (hero[i].color)
+						{
+						case eColor::eRed:
+							hero[i].image = container->GetImages("character_red_01.png")[0];
+							break;
+						case eColor::eBlue:
+							hero[i].image = container->GetImages("character_blue_01.png")[0];
+							break;
+						case eColor::eGreen:
+							hero[i].image = container->GetImages("character_green_01.png")[0];
+							break;
+						case eColor::ePink:
+							hero[i].image = container->GetImages("character_pink_01.png")[0];
+							break;
+						case eColor::eYellow:
+							hero[i].image = container->GetImages("character_yellow_01.png")[0];
+							break;
+						}
 						hero[i].position.x = 100.0f;
 						hero[i].position.y = 200.0f;
 						hero[i].power = rand() % 5 + 1;
@@ -122,6 +141,7 @@ eSceneType PhaseOne::Update(float delta_second)
 	}
 
 	InputManager* input = InputManager::Get();
+	Heros* heros = Heros::Get();
 	
 	//ベルトドラッグ処理
 	if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
@@ -154,81 +174,77 @@ eSceneType PhaseOne::Update(float delta_second)
 	}
 	else if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eRelease)
 	{
-		for (int i = 0; i < sizeof(belt) / sizeof(belt[0]); i++)
+		for (int b = 0; b < sizeof(belt) / sizeof(belt[0]); b++)
 		{
-			if (belt[i].drag_flag)
+			if (belt[b].drag_flag)
 			{
-				switch (belt[i].color)
+				//ヒーロー変身処理
+				for (int h = 0; h < sizeof(hero) / sizeof(hero[0]); h++)
+				{
+					if (hero[h].power != 0)
+					{
+						Vector2D collision_LeftUpper = { hero[h].position.x - HERO_SIZE_X , hero[h].position.y - HERO_SIZE_Y };
+						Vector2D collision_RightLower = { hero[h].position.x + HERO_SIZE_X , hero[h].position.y + HERO_SIZE_Y };
+						if (input->GetMouseLocation().x >= collision_LeftUpper.x && input->GetMouseLocation().x <= collision_RightLower.x)
+						{
+							if (input->GetMouseLocation().y >= collision_LeftUpper.y && input->GetMouseLocation().y <= collision_RightLower.y)
+							{
+								if (belt[b].color == hero[h].color)
+								{
+									switch (hero[h].color)
+									{
+									case eColor::eRed:
+										hero[h].image = container->GetImages("character_red_02.png")[0];
+										break;
+									case eColor::eBlue:
+										hero[h].image = container->GetImages("character_blue_02.png")[0];
+										break;
+									case eColor::eGreen:
+										hero[h].image = container->GetImages("character_green_02.png")[0];
+										break;
+									case eColor::ePink:
+										hero[h].image = container->GetImages("character_pink_02.png")[0];
+										break;
+									case eColor::eYellow:
+										hero[h].image = container->GetImages("character_yellow_02.png")[0];
+										break;
+									}
+									heros->SetHeros(hero[h]);
+									hero[h].position.x = 0.0f;
+									hero[h].position.y = 0.0f;
+									hero[h].power = 0;
+									break;
+								}
+							}
+						}
+					}
+				}
+
+				switch (belt[b].color)
 				{
 				case eColor::eRed:
-					belt[i].position.x = RED_BELT_X;
+					belt[b].position.x = RED_BELT_X;
 					break;
 				case eColor::eBlue:
-					belt[i].position.x = BLUE_BELT_X;
+					belt[b].position.x = BLUE_BELT_X;
 					break;
 				case eColor::eGreen:
-					belt[i].position.x = GREEN_BELT_X;
+					belt[b].position.x = GREEN_BELT_X;
 					break;
 				case eColor::ePink:
-					belt[i].position.x = PINK_BELT_X;
+					belt[b].position.x = PINK_BELT_X;
 					break;
 				case eColor::eYellow:
-					belt[i].position.x = YELLOW_BELT_X;
+					belt[b].position.x = YELLOW_BELT_X;
 					break;
 				}
-				belt[i].position.y = 600.0f;
-				belt[i].drag_flag = FALSE;
+				belt[b].position.y = 600.0f;
+				belt[b].drag_flag = FALSE;
 				break;
 			}
 		}
 	}
-
-	//ヒーロー当たり判定処理
 	
-	Heros* heros = Heros::Get();
-	AssetContainer* container = AssetContainer::Get();
-	if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
-	{
-		for (int i = 0; i < sizeof(hero) / sizeof(hero[0]); i++)
-		{
-			if (hero[i].power != 0)
-			{
-				Vector2D collision_LeftUpper = { hero[i].position.x - HERO_SIZE_X , hero[i].position.y - HERO_SIZE_Y };
-				Vector2D collision_RightLower = { hero[i].position.x + HERO_SIZE_X , hero[i].position.y + HERO_SIZE_Y };
-				if (input->GetMouseLocation().x >= collision_LeftUpper.x && input->GetMouseLocation().x <= collision_RightLower.x)
-				{
-					if (input->GetMouseLocation().y >= collision_LeftUpper.y && input->GetMouseLocation().y <= collision_RightLower.y)
-					{
-						switch (hero[i].color)
-						{
-						case eColor::eRed:
-							hero[i].image = container->GetImages("character_red_02.png")[0];
-							break;
-						case eColor::eBlue:
-							hero[i].image = container->GetImages("character_blue_02.png")[0];
-							break;
-						case eColor::eGreen:
-							hero[i].image = container->GetImages("character_green_02.png")[0];
-							break;
-						case eColor::ePink:
-							hero[i].image = container->GetImages("character_pink_02.png")[0];
-							break;
-						case eColor::eYellow:
-							hero[i].image = container->GetImages("character_yellow_02.png")[0];
-							break;
-						}
-						heros->SetHeros(hero[i]);
-						hero[i].position.x = 0.0f;
-						hero[i].position.y = 0.0f;
-						hero[i].power = 0;
-						break;
-					}
-				}
-			}
-		}
-	}
-	
-
 	return GetNowSceneType();
 }
 
