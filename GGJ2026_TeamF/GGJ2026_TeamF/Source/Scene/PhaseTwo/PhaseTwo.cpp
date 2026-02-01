@@ -28,13 +28,30 @@ void PhaseTwo::Initialize()
         heros.push_back({ data, false, false });
     }
 
+
     AssetContainer* ac = AssetContainer::Get();
+
+    //if (raw_data.empty())
+    //{
+    //    int red = ac->GetImages("character_red_02.png")[0];
+    //    int blue = ac->GetImages("character_blue_02.png")[0];
+    //    int green = ac->GetImages("character_green_02.png")[0];
+    //    int pink = ac->GetImages("character_pink_02.png")[0];
+    //    int yellow = ac->GetImages("character_yellow_02.png")[0];
+    //    for (int i = 0; i < 5; i++)
+    //    {
+    //        heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eRed,10,red }, false, false });
+    //        heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eBlue,10,blue }, false, false });
+    //        heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eYellow,10,yellow }, false, false });
+    //        heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eGreen,10,green }, false, false });
+    //        heros.push_back({ { Vector2D{0.0f,0.0f},eColor::ePink,10,pink }, false, false });
+    //    }
+    //}
 
     for (int i = 0; i < heros.size(); i++)
     {
         heros[i].data.position.y = 80.0f;
     }
-
 
     power_badge_image = ac->GetImages("ui_power_badge.png", 10, 10, 1, 120, 100);   // UŒ‚—ÍƒoƒbƒW
     heros_power_ui_image = ac->GetImages("ui_power_plate_player.png")[0];           // ‘UŒ‚—Í”wŒiUI
@@ -79,11 +96,11 @@ void PhaseTwo::Initialize()
     voice_battle_win = ac->GetSound("voice_battle_win.mp3");
 
     // bgm‚Ì‰¹—Ê’á‰º
-    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_01);
-    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_02);
-    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_03);
+    ChangeVolumeSoundMem(255 * 30 / 100, bgn_battle_01);
+    ChangeVolumeSoundMem(255 * 30 / 100, bgn_battle_02);
+    ChangeVolumeSoundMem(255 * 30 / 100, bgn_battle_03);
     ChangeVolumeSoundMem(255 * 80 / 100, se_battle_lose);
-    ChangeVolumeSoundMem(255 * 80 / 100, se_battle_start);
+    ChangeVolumeSoundMem(255 * 50 / 100, se_battle_start);
     ChangeVolumeSoundMem(255 * 80 / 100, se_battle_win);
     ChangeVolumeSoundMem(255 * 80 / 100, voice_battle_enemy_entry);
     ChangeVolumeSoundMem(255 * 80 / 100, voice_battle_lose);
@@ -416,6 +433,12 @@ void PhaseTwo::CheckCollision()
         Vector2D mouse = input->GetMouseLocation();
         is_start_push = false;
 
+        if (mouse.x >= start_position.x - start_size.x && mouse.x <= start_position.x + start_size.x &&
+            mouse.y >= start_position.y - start_size.y && mouse.y <= start_position.y + start_size.y)
+        {
+            is_start_push = true;
+        }
+
         // ƒ}ƒEƒX‚ª‰Ÿ‚³‚ê‚½Žž‚Ìˆ—
         if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
         {
@@ -427,7 +450,6 @@ void PhaseTwo::CheckCollision()
             if (mouse.x >= start_position.x - start_size.x && mouse.x <= start_position.x + start_size.x &&
                 mouse.y >= start_position.y - start_size.y && mouse.y <= start_position.y + start_size.y)
             {
-                is_start_push = true;
                 now_anime = eAnimation::eBattle;
                 draw_second = 0.1f;
             }
