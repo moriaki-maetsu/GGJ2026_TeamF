@@ -2,6 +2,7 @@
 #include"DxLib.h"
 #include"../../Utility/AssetContainer.h"
 #include"../../Utility/InputManager.h"
+#include"ResultData.h"
 
 #define UI_BUTTON_RETRY_X 1280-120
 #define UI_BUTTON_RETRY_Y 720-150
@@ -14,6 +15,8 @@ std::vector<HeroData> data;
 int character_set, total_hero, bg_result, button_retry_No, button_title_No, bgm_result, se_button;
 int ui_button_retry[2], ui_button_title[2];
 float button_retry_angle, button_end_angle;
+bool angleflg_retry, angleflg_end;
+int enemy_count;
 
 std::vector<int> ui_number;
 
@@ -33,24 +36,51 @@ void ResultScene::Initialize()
 	ChangeVolumeSoundMem(255 * 50 / 100, bgm_result);
 	PlaySoundMem(bgm_result, DX_PLAYTYPE_LOOP);
 	data = Heros::Get()->GetHeros();
+	enemy_count = ResultData::Get()->GetWrestlerCount();
 	total_hero = data.size();
 	button_retry_angle = 0.8f;
 	button_end_angle = 0.6;
+	angleflg_end = 0;
+	angleflg_retry = 0;
+	
 		
 }
 
 eSceneType ResultScene::Update(float delta_second)
 {
 	InputManager* input = InputManager::Get();
+	//float speed = 0.015f; // アニメーション速度（調整してください）
 
-	if (button_retry_angle <= 1.5f)
-	{
-		button_retry_angle += 0.2f * delta_second;
-	}
-	else if(button_retry_angle >= 1.3f)
-	{
-		button_retry_angle -= 0.2f * delta_second;
-	}
+	//if (!angleflg_retry) { // 増やすモード
+	//	button_retry_angle += speed * delta_second;
+	//	if (button_retry_angle >= 0.9f) {
+	//		button_retry_angle = 0.9f;
+	//		angleflg_retry = true; // 減少モードへ
+	//	}
+	//}
+	//else { // 減らすモード
+	//	button_retry_angle -= speed * delta_second;
+	//	if (button_retry_angle <= 0.8f) {
+	//		button_retry_angle = 0.8f;
+	//		angleflg_retry = false; // 増加モードへ
+	//	}
+	//}
+
+
+	//if (!angleflg_end) {
+	//	button_end_angle += speed * delta_second;
+	//	if (button_end_angle >= 0.7f) {
+	//		button_end_angle = 0.7f;
+	//		angleflg_end = true;
+	//	}
+	//}
+	//else {
+	//	button_end_angle -= speed * delta_second;
+	//	if (button_end_angle <= 0.6f) {
+	//		button_end_angle = 0.6f;
+	//		angleflg_end = false;
+	//	}
+	//}
 	
 
 
@@ -110,8 +140,8 @@ void ResultScene::Draw() const
 
 	int hero_one = total_hero % 10;
 	int hero_ten = total_hero / 10 % 10;
-	int enemy_one = total_hero % 10;
-	int enemy_ten = total_hero / 10 % 10;
+	int enemy_one = enemy_count % 10;
+	int enemy_ten = enemy_count / 10 % 10;
 
 	DrawRotaGraph(1280 / 2, 720 / 2, 1.0, 0.0, bg_result, TRUE);
 	DrawRotaGraph(UI_BUTTON_RETRY_X, UI_BUTTON_RETRY_Y, button_retry_angle, 0.0, ui_button_retry[button_retry_No], TRUE);
