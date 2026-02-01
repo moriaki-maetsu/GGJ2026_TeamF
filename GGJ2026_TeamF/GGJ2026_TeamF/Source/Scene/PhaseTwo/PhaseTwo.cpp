@@ -28,12 +28,30 @@ void PhaseTwo::Initialize()
         heros.push_back({ data, false, false });
     }
 
+    AssetContainer* ac = AssetContainer::Get();
+
+    if (raw_data.empty())
+    {
+        int red = ac->GetImages("character_red_02.png")[0];
+        int blue = ac->GetImages("character_blue_02.png")[0];
+        int green = ac->GetImages("character_green_02.png")[0];
+        int pink = ac->GetImages("character_pink_02.png")[0];
+        int yellow = ac->GetImages("character_yellow_02.png")[0];
+        for (int i = 0; i < 5; i++)
+        {
+            heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eRed,10,red }, false, false });
+            heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eBlue,10,blue }, false, false });
+            heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eYellow,10,yellow }, false, false });
+            heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eGreen,10,green }, false, false });
+            heros.push_back({ { Vector2D{0.0f,0.0f},eColor::ePink,10,pink }, false, false });
+        }
+    }
+
     for (int i = 0; i < heros.size(); i++)
     {
         heros[i].data.position.y = 80.0f;
     }
 
-    AssetContainer* ac = AssetContainer::Get();
 
     power_badge_image = ac->GetImages("ui_power_badge.png", 10, 10, 1, 120, 100);   // UŒ‚—ÍƒoƒbƒW
     heros_power_ui_image = ac->GetImages("ui_power_plate_player.png")[0];           // ‘UŒ‚—Í”wŒiUI
@@ -67,7 +85,6 @@ void PhaseTwo::Initialize()
     draw_second = 0.0f;
 
     // ƒTƒEƒ“ƒh
-
     bgn_battle_01 = ac->GetSound("bgn_battle_01.mp3");
     bgn_battle_02 = ac->GetSound("bgn_battle_02.mp3");
     bgn_battle_03 = ac->GetSound("bgn_battle_03.mp3");
@@ -77,6 +94,11 @@ void PhaseTwo::Initialize()
     voice_battle_enemy_entry = ac->GetSound("voice_battle_enemy_entry.mp3");
     voice_battle_lose = ac->GetSound("voice_battle_lose.mp3");
     voice_battle_win = ac->GetSound("voice_battle_win.mp3");
+
+    PlaySoundMem(se_battle_start, DX_PLAYTYPE_BACK);
+    PlaySoundMem(bgn_battle_01, DX_PLAYTYPE_BACK);
+
+
 }
 
 eSceneType PhaseTwo::Update(float delta_second)
@@ -102,6 +124,8 @@ eSceneType PhaseTwo::Update(float delta_second)
             is_start_push = false;
             select_heros.clear();
 
+            PlaySoundMem(voice_battle_enemy_entry, DX_PLAYTYPE_BACK);
+
             // Ž€‚ñ‚¾ƒq[ƒ[‚ð”z—ñ‚©‚çÁ‹Ž
             heros.erase(
                 std::remove_if(heros.begin(), heros.end(),
@@ -111,6 +135,7 @@ eSceneType PhaseTwo::Update(float delta_second)
                 ),
                 heros.end()
             );
+
 
             break;
 
@@ -124,6 +149,9 @@ eSceneType PhaseTwo::Update(float delta_second)
                 scrollx = 0.0f;
                 now_anime = eAnimation::eWin;
                 draw_second = 2.0f;
+                PlaySoundMem(se_battle_win, DX_PLAYTYPE_BACK);
+                PlaySoundMem(voice_battle_win, DX_PLAYTYPE_BACK);
+
 
                 // ƒq[ƒ[Á‹Žƒtƒ‰ƒO
                 for (PhaseTwoHeros* hero_ptr : select_heros)
@@ -138,6 +166,8 @@ eSceneType PhaseTwo::Update(float delta_second)
             {
                 now_anime = eAnimation::eLose;
                 draw_second = 2.0f;
+                PlaySoundMem(se_battle_lose, DX_PLAYTYPE_BACK);
+                PlaySoundMem(voice_battle_lose, DX_PLAYTYPE_BACK);
             }
 
             break;
@@ -548,10 +578,24 @@ void PhaseTwo::SetNextWrestler()
     wrestler_rank = 0;
     if (wrestler_power > 20)
     {
-        wrestler_rank = 1;
-        if (wrestler_power > 35)
+        if (CheckSoundMem(bgn_battle_01))
         {
+            StopSoundMem(bgn_battle_01);
+        }
+        wrestler_rank = 1;
+        if (wrestler_power <= 35)
+        {
+            PlaySoundMem(bgn_battle_02, DX_PLAYTYPE_BACK);
+        }
+        else
+        {
+            if (CheckSoundMem(bgn_battle_02))
+            {
+                StopSoundMem(bgn_battle_02);
+            }
+
             wrestler_rank = 2;
+            PlaySoundMem(bgn_battle_03, DX_PLAYTYPE_BACK);
         }
     }
 }
