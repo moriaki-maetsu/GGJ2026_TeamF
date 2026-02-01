@@ -119,7 +119,7 @@ void PhaseOne::Initialize()
 	srand((unsigned int)time(NULL));
 
 	display_time_count = 0;
-	display_time = 30 + rand() % 30;
+	display_time = 15 + rand() % 30;
 	timelimit_count = 0;
 
 	start_flag = TRUE;
@@ -186,7 +186,7 @@ eSceneType PhaseOne::Update(float delta_second)
 							{
 								hero[i].position.y = LANE_2_Y;
 							}
-							hero[i].power = rand() % 5 + 1;
+							hero[i].power = rand() % 10 + 1;
 							hero[i].change_flag = FALSE;
 							exit = TRUE;
 						}
@@ -205,7 +205,7 @@ eSceneType PhaseOne::Update(float delta_second)
 
 
 			display_time_count = 0;
-			display_time = 30 + rand() % 30;
+			display_time = 15 + rand() % 30;
 		}
 
 		//ヒーロー移動処理
