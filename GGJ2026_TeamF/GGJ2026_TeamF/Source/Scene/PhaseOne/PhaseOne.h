@@ -2,18 +2,21 @@
 
 #include "../SceneBase.h"
 #include "../../Hero/HeroData.h"
+#include "../../Hero/Belt.h"
 
 class PhaseOne : public SceneBase
 {
 private:
 	int time;
-	HeroData hero[2];
+	HeroData hero[5];
+	Belt belt[5];
 	int display_count;
 public:
 	PhaseOne()
 		: SceneBase()
 		, time()
 		, hero()
+		, belt()
 		, display_count()
 	{
 

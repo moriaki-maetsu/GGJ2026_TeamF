@@ -9,16 +9,59 @@ void PhaseOne::Initialize()
 {
 	AssetContainer* container = AssetContainer::Get();
 	hero[0].color = eColor::eRed;
-	hero[0].image = container->GetImages("Hero_Red.png")[0];
+	hero[0].image = container->GetImages("character_red_01.png")[0];
 	hero[0].position.x = 0.0f;
 	hero[0].position.y = 0.0f;
 	hero[0].power = 0;
 
-	hero[1].color = eColor::eRed;
-	hero[1].image = container->GetImages("Hero_Blue.png")[0];
+	hero[1].color = eColor::eBlue;
+	hero[1].image = container->GetImages("character_blue_01.png")[0];
 	hero[1].position.x = 0.0f;
 	hero[1].position.y = 0.0f;
 	hero[1].power = 0;
+
+	hero[2].color = eColor::eGreen;
+	hero[2].image = container->GetImages("character_green_01.png")[0];
+	hero[2].position.x = 0.0f;
+	hero[2].position.y = 0.0f;
+	hero[2].power = 0;
+
+	hero[3].color = eColor::ePink;
+	hero[3].image = container->GetImages("character_pink_01.png")[0];
+	hero[3].position.x = 0.0f;
+	hero[3].position.y = 0.0f;
+	hero[3].power = 0;
+
+	hero[4].color = eColor::eYellow;
+	hero[4].image = container->GetImages("character_yellow_01.png")[0];
+	hero[4].position.x = 0.0f;
+	hero[4].position.y = 0.0f;
+	hero[4].power = 0;
+
+	belt[0].color = eColor::eRed;
+	belt[0].image = container->GetImages("icon_belt_red_02.png")[0];
+	belt[0].position.x = 400.0f;
+	belt[0].position.y = 600.0f;
+
+	belt[1].color = eColor::eBlue;
+	belt[1].image = container->GetImages("icon_belt_blue_02.png")[0];
+	belt[1].position.x = 520.0f;
+	belt[1].position.y = 600.0f;
+
+	belt[2].color = eColor::eGreen;
+	belt[2].image = container->GetImages("icon_belt_green_02.png")[0];
+	belt[2].position.x = 640.0f;
+	belt[2].position.y = 600.0f;
+
+	belt[3].color = eColor::ePink;
+	belt[3].image = container->GetImages("icon_belt_pink_02.png")[0];
+	belt[3].position.x = 760.0f;
+	belt[3].position.y = 600.0f;
+
+	belt[4].color = eColor::eYellow;
+	belt[4].image = container->GetImages("icon_belt_yellow_02.png")[0];
+	belt[4].position.x = 880.0f;
+	belt[4].position.y = 600.0f;
 
 	display_count = 0;
 }
@@ -28,16 +71,32 @@ eSceneType PhaseOne::Update(float delta_second)
 	//ヒーロー生成処理
 	if (++display_count >= 120)
 	{
-		for (int i = 0; i < sizeof(hero) / sizeof(hero[0]); i++)
+		do
 		{
-			if (hero[i].power == 0)
+			bool exit = FALSE;
+			int form_num = rand() % 5;
+
+			for (int i = 0; i < sizeof(hero) / sizeof(hero[0]); i++)
 			{
-				hero[i].position.x = 100.0f;
-				hero[i].position.y = 300.0f;
-				hero[i].power = rand() % 5 + 1;
+				if (i == form_num)
+				{
+					if (hero[form_num].power == 0)
+					{
+						hero[i].position.x = 100.0f;
+						hero[i].position.y = 200.0f;
+						hero[i].power = rand() % 5 + 1;
+						exit = TRUE;
+					}
+				}
+			}
+
+			if (exit)
+			{
 				break;
 			}
-		}
+		} while (TRUE);
+		
+		
 		display_count = 0;
 	}
 
@@ -46,7 +105,13 @@ eSceneType PhaseOne::Update(float delta_second)
 	{
 		if (hero[i].power != 0)
 		{
-			hero[i].position.x += 1.0f;
+			hero[i].position.x += 3.0f;
+			if (hero[i].position.x >= 1280)
+			{
+				hero[i].position.x = 0.0f;
+				hero[i].position.y = 0.0f;
+				hero[i].power = 0;
+			}
 		}
 	}
 
@@ -69,6 +134,7 @@ eSceneType PhaseOne::Update(float delta_second)
 						hero[i].position.x = 0.0f;
 						hero[i].position.y = 0.0f;
 						hero[i].power = 0;
+						break;
 					}
 				}
 			}
@@ -90,6 +156,14 @@ void PhaseOne::Draw() const
 			Vector2D collision_RightLower = { hero[i].position.x + HERO_SIZE_X , hero[i].position.y + HERO_SIZE_Y };
 			DrawBox(collision_LeftUpper.x, collision_LeftUpper.y, collision_RightLower.x, collision_RightLower.y, GetColor(255, 255, 255), FALSE);
 		}
+	}
+
+	for (int i = 0; i < sizeof(belt) / sizeof(belt[0]); i++)
+	{
+		DrawRotaGraph(belt[i].position.x, belt[i].position.y, 1.0, 0.0, belt[i].image, TRUE);
+		Vector2D collision_LeftUpper = { belt[i].position.x - BELT_SIZE_X , belt[i].position.y - BELT_SIZE_Y };
+		Vector2D collision_RightLower = { belt[i].position.x + BELT_SIZE_X , belt[i].position.y + BELT_SIZE_Y };
+		DrawBox(collision_LeftUpper.x, collision_LeftUpper.y, collision_RightLower.x, collision_RightLower.y, GetColor(255, 255, 255), FALSE);
 	}
 
 	Heros* heros = Heros::Get();

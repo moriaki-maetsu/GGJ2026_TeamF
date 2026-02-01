@@ -36,6 +36,8 @@
   <ItemGroup>
     <ClInclude Include="Source\Application\Application.h" />
     <ClInclude Include="Source\Application\ProjectConfig.h" />
+    <ClInclude Include="Source\Hero\Belt.h" />
+    <ClInclude Include="Source\Hero\Color.h" />
     <ClInclude Include="Source\Hero\HeroData.h" />
     <ClInclude Include="Source\Hero\Heros.h" />
     <ClInclude Include="Source\Objects\GameObject.h" />

@@ -2,16 +2,12 @@
 #include "../Utility/Geometry.h"
 #include "Color.h"
 
-#define HERO_SIZE_X	(75)
-#define HERO_SIZE_Y	(100)
+#define BELT_SIZE_X	(50)
+#define BELT_SIZE_Y	(50)
 
-
-
-struct HeroData
+struct Belt
 {
 	Vector2D position = { 0.0f,0.0f };		// ç¿ïW
-	eColor color = eColor::eNone;			// êF
-	int power = 0;							// óÕ
+	eColor color = eColor::eNone;			// êF						// óÕ
 	int image = -1;							// âÊëú
 };
-
