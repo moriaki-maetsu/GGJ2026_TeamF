@@ -58,17 +58,14 @@ eSceneType ResultScene::Update(float delta_second)
 	{
 		if (input->GetMouseLocation().y >= UI_BUTTON_RETRY_Y-15 && input->GetMouseLocation().y <= UI_BUTTON_RETRY_Y+15)
 		{
-			if (button_retry_No != 1)
-			{
-				PlaySoundMem(se_button, DX_PLAYTYPE_BACK);
-			}
+	
 			button_retry_No = 1;
 			
 			
 
 			if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
 			{
-				
+				PlaySoundMem(se_button, DX_PLAYTYPE_BACK);
 				return eSceneType::ePhaseOne;
 			}
 		}
@@ -86,16 +83,13 @@ eSceneType ResultScene::Update(float delta_second)
 	{
 		if (input->GetMouseLocation().y >= UI_BUTTON_END_Y-15 && input->GetMouseLocation().y <= UI_BUTTON_END_Y+15)
 		{
-			if (button_title_No != 1)
-			{
-				PlaySoundMem(se_button, DX_PLAYTYPE_BACK);
-			}
+		
 			button_title_No = 1;
 			
 
 			if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
 			{
-				
+				PlaySoundMem(se_button, DX_PLAYTYPE_BACK);
 				return eSceneType::eTitle;
 			}
 		}

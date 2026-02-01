@@ -33,9 +33,9 @@ void TitleScene::Initialize()
 	se_title_button = container->GetSound("se_title_button.mp3");
 	voice_start = container->GetSound("voice_title_start.mp3");
 	ChangeVolumeSoundMem(255 * 30 / 100, bgm_title);
+	ChangeVolumeSoundMem(255 * 50 / 100, se_title_button);
+	ChangeVolumeSoundMem(255 * 60 / 100, voice_start);
 	PlaySoundMem(bgm_title, DX_PLAYTYPE_LOOP);
-	ChangeFont("HG創英角ｺﾞｼｯｸUB");
-	//SetFontSize(30);
 	
 }
 
@@ -47,14 +47,12 @@ eSceneType TitleScene::Update(float delta_second)
 	{
 		if (input->GetMouseLocation().y >= START_BUTTON_Y-45 && input->GetMouseLocation().y <= START_BUTTON_Y+45)
 		{
-			if (button_start_No != 1)
-			{
-				PlaySoundMem(se_title_button, DX_PLAYTYPE_BACK);
-			}
+		
 			button_start_No = 1;
 
 			if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
 			{
+				PlaySoundMem(se_title_button, DX_PLAYTYPE_BACK);
 				PlaySoundMem(voice_start, DX_PLAYTYPE_NORMAL);
 				return eSceneType::ePhaseOne;
 			}
@@ -73,14 +71,11 @@ eSceneType TitleScene::Update(float delta_second)
 	{
 		if (input->GetMouseLocation().y >= END_BUTTON_Y-45 && input->GetMouseLocation().y <= END_BUTTON_Y+45)
 		{
-			if (button_end_No != 1)
-			{
-				PlaySoundMem(se_title_button, DX_PLAYTYPE_BACK);
-			}
 			button_end_No = 1;
 
 			if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
 			{
+				PlaySoundMem(se_title_button, DX_PLAYTYPE_BACK);
 				return eSceneType::eResult;
 			}
 		}
