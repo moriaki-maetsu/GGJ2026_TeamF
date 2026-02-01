@@ -147,7 +147,8 @@ eSceneType PhaseOne::Update(float delta_second)
 		//ヒーロー生成処理
 		if (++display_time_count >= display_time)
 		{
-			do
+			bool not_change_flag[5] = { TRUE,TRUE,TRUE,TRUE,TRUE };
+			while(not_change_flag[0] || not_change_flag[1] || not_change_flag[2] || not_change_flag[3] || not_change_flag[4])
 			{
 				bool exit = FALSE;
 				int form_num = rand() % 5;
@@ -189,6 +190,10 @@ eSceneType PhaseOne::Update(float delta_second)
 							hero[i].change_flag = FALSE;
 							exit = TRUE;
 						}
+						else
+						{
+							not_change_flag[i] = FALSE;
+						}
 					}
 				}
 
@@ -196,7 +201,7 @@ eSceneType PhaseOne::Update(float delta_second)
 				{
 					break;
 				}
-			} while (TRUE);
+			}
 
 
 			display_time_count = 0;
