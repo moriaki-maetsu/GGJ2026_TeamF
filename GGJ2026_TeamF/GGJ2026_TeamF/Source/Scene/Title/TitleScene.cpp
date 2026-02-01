@@ -76,7 +76,7 @@ eSceneType TitleScene::Update(float delta_second)
 			if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
 			{
 				PlaySoundMem(se_title_button, DX_PLAYTYPE_BACK);
-				return eSceneType::eResult;
+				return eSceneType::eExit;
 			}
 		}
 		else

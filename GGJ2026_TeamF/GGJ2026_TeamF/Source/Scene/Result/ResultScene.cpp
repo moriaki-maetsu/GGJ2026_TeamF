@@ -22,7 +22,7 @@ void ResultScene::Initialize()
 {
 	AssetContainer* container = AssetContainer::Get();
 	character_set = container->GetImages("character_set.png")[0];
-	ui_number = container->GetImages("ui_number_01.png",11,11,1,374/11,68);
+	ui_number = container->GetImages("ui_number_02.png",11,11,1,374/11,68);
 	bg_result= container->GetImages("bg_result_01.png")[0];
 	ui_button_retry[0] = container->GetImages("ui_result_button_retry_01.png")[0];
 	ui_button_retry[1] = container->GetImages("ui_result_button_retry_02.png")[0];
@@ -43,14 +43,14 @@ eSceneType ResultScene::Update(float delta_second)
 {
 	InputManager* input = InputManager::Get();
 
-	//if (button_retry_angle < 1.5f)
-	//{
-	//	button_retry_angle += 0.2f * delta_second;
-	//}
-	//else if(button_retry_angle >= 1.3f)
-	//{
-	//	button_retry_angle -= 0.2f * delta_second;
-	//}
+	if (button_retry_angle <= 1.5f)
+	{
+		button_retry_angle += 0.2f * delta_second;
+	}
+	else if(button_retry_angle >= 1.3f)
+	{
+		button_retry_angle -= 0.2f * delta_second;
+	}
 	
 
 
