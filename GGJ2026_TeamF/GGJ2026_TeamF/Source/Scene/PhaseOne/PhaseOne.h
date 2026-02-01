@@ -16,6 +16,10 @@ private:
 	bool start_flag;
 	int start_count;
 	int conveyer_x;
+	int bgm;
+	int belt_click_se;
+	int change_se;
+	int miss_se;
 public:
 	PhaseOne()
 		: SceneBase()
@@ -28,6 +32,10 @@ public:
 		, start_flag()
 		, start_count()
 		, conveyer_x()
+		, bgm()
+		, belt_click_se()
+		, change_se()
+		, miss_se()
 	{
 
 	}
