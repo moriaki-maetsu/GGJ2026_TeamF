@@ -10,6 +10,7 @@ private:
 	int time;
 	HeroData hero[5];
 	Belt belt[5];
+	Belt belt_icon[5];
 	int display_count;
 public:
 	PhaseOne()
@@ -17,6 +18,7 @@ public:
 		, time()
 		, hero()
 		, belt()
+		, belt_icon()
 		, display_count()
 	{
 
