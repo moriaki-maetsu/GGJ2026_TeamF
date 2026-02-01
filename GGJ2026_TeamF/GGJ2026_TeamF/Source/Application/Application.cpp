@@ -73,7 +73,10 @@ void Application::Run()
 				// シーンの更新と描画
 				execute_flag = scene_manager->Update(delta_second);
 
-				delta_second -= 1.0f / 60.0f;
+				while (delta_second >= (1.0f / 60.0f))
+				{
+					delta_second -= 1.0f / 60.0f;
+				}
 			}
 
 			// 終了確認

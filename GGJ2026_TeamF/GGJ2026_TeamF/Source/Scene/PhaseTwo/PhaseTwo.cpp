@@ -28,12 +28,30 @@ void PhaseTwo::Initialize()
         heros.push_back({ data, false, false });
     }
 
+    AssetContainer* ac = AssetContainer::Get();
+
+    if (raw_data.empty())
+    {
+        int red = ac->GetImages("character_red_02.png")[0];
+        int blue = ac->GetImages("character_blue_02.png")[0];
+        int green = ac->GetImages("character_green_02.png")[0];
+        int pink = ac->GetImages("character_pink_02.png")[0];
+        int yellow = ac->GetImages("character_yellow_02.png")[0];
+        for (int i = 0; i < 5; i++)
+        {
+            heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eRed,10,red }, false, false });
+            heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eBlue,10,blue }, false, false });
+            heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eYellow,10,yellow }, false, false });
+            heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eGreen,10,green }, false, false });
+            heros.push_back({ { Vector2D{0.0f,0.0f},eColor::ePink,10,pink }, false, false });
+        }
+    }
+
     for (int i = 0; i < heros.size(); i++)
     {
         heros[i].data.position.y = 80.0f;
     }
 
-    AssetContainer* ac = AssetContainer::Get();
 
     power_badge_image = ac->GetImages("ui_power_badge.png", 10, 10, 1, 120, 100);   // 攻撃力バッジ
     heros_power_ui_image = ac->GetImages("ui_power_plate_player.png")[0];           // 総攻撃力背景UI
@@ -67,16 +85,23 @@ void PhaseTwo::Initialize()
     draw_second = 0.0f;
 
     // サウンド
-
     bgn_battle_01 = ac->GetSound("bgn_battle_01.mp3");
-    bgn_battle_02 = ac->GetSound("bgn_battle_02.mp3");
-    bgn_battle_03 = ac->GetSound("bgn_battle_03.mp3");
+    bgn_battle_01 = ac->GetSound("bgn_battle_02.mp3");
+    bgn_battle_01 = ac->GetSound("bgn_battle_03.mp3");
     se_battle_lose = ac->GetSound("se_battle_lose.mp3");
     se_battle_start = ac->GetSound("se_battle_start.mp3");
     se_battle_win = ac->GetSound("se_battle_win.mp3");
     voice_battle_enemy_entry = ac->GetSound("voice_battle_enemy_entry.mp3");
     voice_battle_lose = ac->GetSound("voice_battle_lose.mp3");
     voice_battle_win = ac->GetSound("voice_battle_win.mp3");
+
+    // bgmの音量低下
+    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_01);
+    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_01);
+    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_01);
+
+    PlaySoundMem(se_battle_start, DX_PLAYTYPE_BACK);
+    PlaySoundMem(bgn_battle_01, DX_PLAYTYPE_BACK);
 }
 
 eSceneType PhaseTwo::Update(float delta_second)
@@ -99,8 +124,9 @@ eSceneType PhaseTwo::Update(float delta_second)
         {
         case eNone:
             now_anime = eAnimation::eNone;
-            is_start_push = false;
             select_heros.clear();
+
+            PlaySoundMem(voice_battle_enemy_entry, DX_PLAYTYPE_BACK);
 
             // 死んだヒーローを配列から消去
             heros.erase(
@@ -111,6 +137,7 @@ eSceneType PhaseTwo::Update(float delta_second)
                 ),
                 heros.end()
             );
+
 
             break;
 
@@ -124,6 +151,9 @@ eSceneType PhaseTwo::Update(float delta_second)
                 scrollx = 0.0f;
                 now_anime = eAnimation::eWin;
                 draw_second = 2.0f;
+                PlaySoundMem(se_battle_win, DX_PLAYTYPE_BACK);
+                PlaySoundMem(voice_battle_win, DX_PLAYTYPE_BACK);
+
 
                 // ヒーロー消去フラグ
                 for (PhaseTwoHeros* hero_ptr : select_heros)
@@ -138,6 +168,8 @@ eSceneType PhaseTwo::Update(float delta_second)
             {
                 now_anime = eAnimation::eLose;
                 draw_second = 2.0f;
+                PlaySoundMem(se_battle_lose, DX_PLAYTYPE_BACK);
+                PlaySoundMem(voice_battle_lose, DX_PLAYTYPE_BACK);
             }
 
             break;
@@ -153,6 +185,17 @@ eSceneType PhaseTwo::Update(float delta_second)
 
 
     InputManager* input = InputManager::Get();
+
+    if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
+    {
+        old_mouse_x = input->GetMouseLocation().x;
+    }
+    else if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::ePressed)
+    {
+        float now_mouse_x = input->GetMouseLocation().x;
+        scrollx += old_mouse_x - now_mouse_x;
+        old_mouse_x = now_mouse_x;
+    }
 
     float rot = -input->GetScrollWheel().y * 50.0f;
     scrollx += rot;
@@ -377,26 +420,25 @@ void PhaseTwo::CheckCollision()
 {
     InputManager* input = InputManager::Get();
 
-    if(now_anime==eAnimation::eNone)
+    if (now_anime == eAnimation::eNone)
     {
+        Vector2D mouse = input->GetMouseLocation();
+        is_start_push = false;
+
         // マウスが押された時の処理
-        if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick
-            && now_anime == eAnimation::eNone)
+        if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
         {
             // スクロールキャラクターの判定を行う
             CheckScrollCharacterCollision();
             // 場に出ているキャラクターの判定を行う
             CheckDeselectCollision();
-
-            Vector2D mouse = input->GetMouseLocation();
-
             // vsが押されたか判定
             if (mouse.x >= start_position.x - start_size.x && mouse.x <= start_position.x + start_size.x &&
                 mouse.y >= start_position.y - start_size.y && mouse.y <= start_position.y + start_size.y)
             {
+                is_start_push = true;
                 now_anime = eAnimation::eBattle;
                 draw_second = 0.1f;
-                is_start_push = true;
             }
 
             // 合計攻撃力を再計算
@@ -462,25 +504,49 @@ void PhaseTwo::CheckScrollCharacterCollision()
         if (mouse.x >= left && mouse.x <= right &&
             mouse.y >= up && mouse.y <= down)
         {
-            // リストの中から「同じ色」のキャラを探し、フラグをfalseに戻す
+            // --- (既存のフラグ解除と削除処理はそのまま) ---
             for (PhaseTwoHeros* s : select_heros) {
-                if (s->data.color == hero.data.color) {
-                    s->is_selected = false;
-                }
+                if (s->data.color == hero.data.color) s->is_selected = false;
             }
-
-            // リストから「同じ色」の要素を物理的に削除
             select_heros.erase(
                 std::remove_if(select_heros.begin(), select_heros.end(),
-                    [&](const PhaseTwoHeros* s) {
-                        return s->data.color == hero.data.color;
-                    }),
+                    [&](const PhaseTwoHeros* s) { return s->data.color == hero.data.color; }),
                 select_heros.end()
             );
 
-            // 新しく追加する
+            // 新しく追加
             select_heros.push_back(&hero);
             hero.is_selected = true;
+
+            // --- ここからソート処理 ---
+
+            // 色の優先順位を定義するラムダ関数
+            auto getColorPriority = [](eColor color) {
+                switch (color) {
+                case eColor::eRed:    return 1;
+                case eColor::eBlue:   return 2;
+                case eColor::eYellow: return 3;
+                case eColor::eGreen:  return 4;
+                case eColor::ePink:   return 5;
+                default:              return 99; // その他は後ろへ
+                }
+                };
+
+            // バブルソート：ポインタの並び順を入れ替える
+            int n = (int)select_heros.size();
+            for (int i = 0; i < n - 1; ++i) {
+                for (int j = 0; j < n - i - 1; ++j) {
+                    // 隣り合う要素の優先度を比較
+                    if (getColorPriority(select_heros[j]->data.color) >
+                        getColorPriority(select_heros[j + 1]->data.color)) {
+
+                        // 要素（ポインタ）を入れ替える
+                        PhaseTwoHeros* temp = select_heros[j];
+                        select_heros[j] = select_heros[j + 1];
+                        select_heros[j + 1] = temp;
+                    }
+                }
+            }
         }
     }
 }
@@ -544,14 +610,34 @@ void PhaseTwo::CheckDeselectCollision()
 void PhaseTwo::SetNextWrestler()
 {
     // 攻撃力
-    wrestler_power += 10;
+    wrestler_power += 5;
+    
+    if (wrestler_power > 45)
+    {
+        wrestler_power = 45;
+    }
+
     wrestler_rank = 0;
     if (wrestler_power > 20)
     {
-        wrestler_rank = 1;
-        if (wrestler_power > 35)
+        if (CheckSoundMem(bgn_battle_01))
         {
+            StopSoundMem(bgn_battle_01);
+        }
+        wrestler_rank = 1;
+        if (wrestler_power <= 35)
+        {
+            PlaySoundMem(bgn_battle_02, DX_PLAYTYPE_BACK);
+        }
+        else
+        {
+            if (CheckSoundMem(bgn_battle_02))
+            {
+                StopSoundMem(bgn_battle_02);
+            }
+
             wrestler_rank = 2;
+            PlaySoundMem(bgn_battle_03, DX_PLAYTYPE_BACK);
         }
     }
 }

@@ -107,15 +107,19 @@ void PhaseOne::Initialize()
 	belt_icon[4].position.x = YELLOW_BELT_X;
 	belt_icon[4].position.y = 600.0f;
 
-	container->GetSound("bgm_change.mp3");
-	container->GetSound("se_change_belt_push.mp3");
-	container->GetSound("se_change_01.mp3");
-	container->GetSound("se_change_02.mp3");
+	bgm = container->GetSound("bgm_change.mp3");
+	belt_click_se = container->GetSound("se_change_belt_push.mp3");
+	change_se = container->GetSound("se_change_01.mp3");
+	miss_se = container->GetSound("se_change_02.mp3");
+	ChangeVolumeSoundMem(255 * 20 / 100, bgm);
+	ChangeVolumeSoundMem(255 * 40 / 100, belt_click_se);
+	ChangeVolumeSoundMem(255 * 30 / 100, change_se);
+	ChangeVolumeSoundMem(255 * 40 / 100, miss_se);
 
 	srand((unsigned int)time(NULL));
 
 	display_time_count = 0;
-	display_time = 60 + rand() % 60;
+	display_time = 15 + rand() % 30;
 	timelimit_count = 0;
 
 	start_flag = TRUE;
@@ -136,14 +140,15 @@ eSceneType PhaseOne::Update(float delta_second)
 	}
 	else
 	{
-		if (!(CheckSoundMem(container->GetSound("bgm_change.mp3"))))
+		if (!(CheckSoundMem(bgm)))
 		{
-			PlaySoundMem(container->GetSound("bgm_change.mp3"), DX_PLAYTYPE_LOOP);
+			PlaySoundMem(bgm, DX_PLAYTYPE_LOOP);
 		}
 		//ヒーロー生成処理
 		if (++display_time_count >= display_time)
 		{
-			do
+			bool not_change_flag[5] = { TRUE,TRUE,TRUE,TRUE,TRUE };
+			while(not_change_flag[0] || not_change_flag[1] || not_change_flag[2] || not_change_flag[3] || not_change_flag[4])
 			{
 				bool exit = FALSE;
 				int form_num = rand() % 5;
@@ -181,9 +186,13 @@ eSceneType PhaseOne::Update(float delta_second)
 							{
 								hero[i].position.y = LANE_2_Y;
 							}
-							hero[i].power = rand() % 5 + 1;
+							hero[i].power = rand() % 10 + 1;
 							hero[i].change_flag = FALSE;
 							exit = TRUE;
+						}
+						else
+						{
+							not_change_flag[i] = FALSE;
 						}
 					}
 				}
@@ -192,11 +201,11 @@ eSceneType PhaseOne::Update(float delta_second)
 				{
 					break;
 				}
-			} while (TRUE);
+			}
 
 
 			display_time_count = 0;
-			display_time = 60 + rand() % 60;
+			display_time = 15 + rand() % 30;
 		}
 
 		//ヒーロー移動処理
@@ -216,7 +225,7 @@ eSceneType PhaseOne::Update(float delta_second)
 				}
 				else
 				{
-					hero[i].position.x += 10.0f;
+					hero[i].position.x += 8.0f;
 					if (hero[i].position.x >= 1280)
 					{
 						hero[i].position.x = 0.0f;
@@ -292,7 +301,7 @@ eSceneType PhaseOne::Update(float delta_second)
 					if (input->GetMouseLocation().y >= collision_LeftUpper.y && input->GetMouseLocation().y <= collision_RightLower.y)
 					{
 						belt[i].drag_flag = TRUE;
-						PlaySoundMem(container->GetSound("se_change_belt_push.mp3"), DX_PLAYTYPE_BACK);
+						PlaySoundMem(belt_click_se, DX_PLAYTYPE_BACK);
 						break;
 					}
 				}
@@ -403,7 +412,7 @@ eSceneType PhaseOne::Update(float delta_second)
 										}
 										heros->SetHeros(hero[h]);
 										hero[h].change_flag = TRUE;
-										PlaySoundMem(container->GetSound("se_change_01.mp3"), DX_PLAYTYPE_BACK);
+										PlaySoundMem(change_se, DX_PLAYTYPE_BACK);
 										break;
 									}
 									else
@@ -433,7 +442,7 @@ eSceneType PhaseOne::Update(float delta_second)
 
 						if (h == sizeof(hero) / sizeof(hero[0]) - 1)
 						{
-							PlaySoundMem(container->GetSound("se_change_02.mp3"), DX_PLAYTYPE_BACK);
+							PlaySoundMem(miss_se, DX_PLAYTYPE_BACK);
 						}
 					}
 
@@ -463,7 +472,7 @@ eSceneType PhaseOne::Update(float delta_second)
 		}
 		++timelimit_count;
 
-		conveyer_x += 2;
+		conveyer_x += 4;
 		if (conveyer_x >= 84)
 		{
 			conveyer_x = 0;
