@@ -12,4 +12,5 @@ struct Belt
 	eColor color = eColor::eNone;			// F
 	int image = -1;							// ‰æ‘œ
 	bool drag_flag = FALSE;
+
 };
