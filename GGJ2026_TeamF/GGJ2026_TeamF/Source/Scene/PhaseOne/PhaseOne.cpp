@@ -115,7 +115,7 @@ void PhaseOne::Initialize()
 	srand((unsigned int)time(NULL));
 
 	display_time_count = 0;
-	display_time = 120 + rand() % 120;
+	display_time = 60 + rand() % 60;
 	timelimit_count = 0;
 
 	start_flag = TRUE;
@@ -194,7 +194,7 @@ eSceneType PhaseOne::Update(float delta_second)
 
 
 			display_time_count = 0;
-			display_time = 120 + rand() % 120;
+			display_time = 60 + rand() % 60;
 		}
 
 		//ヒーロー移動処理
@@ -204,7 +204,7 @@ eSceneType PhaseOne::Update(float delta_second)
 			{
 				if (hero[i].change_flag)
 				{
-					hero[i].position.y -= 1.0f;
+					hero[i].position.y -= 3.0f;
 					if (hero[i].position.y <= 0.0f)
 					{
 						hero[i].position.x = 0.0f;
@@ -214,7 +214,7 @@ eSceneType PhaseOne::Update(float delta_second)
 				}
 				else
 				{
-					hero[i].position.x += 3.0f;
+					hero[i].position.x += 10.0f;
 					if (hero[i].position.x >= 1280)
 					{
 						hero[i].position.x = 0.0f;
@@ -304,6 +304,57 @@ eSceneType PhaseOne::Update(float delta_second)
 				{
 					belt[i].position.x = input->GetMouseLocation().x;
 					belt[i].position.y = input->GetMouseLocation().y;
+
+					for (int h = 0; h < sizeof(hero) / sizeof(hero[0]); h++)
+					{
+						if (hero[h].power != 0 && !(hero[h].change_flag))
+						{
+							Vector2D collision_LeftUpper = { hero[h].position.x - HERO_SIZE_X , hero[h].position.y - HERO_SIZE_Y };
+							Vector2D collision_RightLower = { hero[h].position.x + HERO_SIZE_X , hero[h].position.y + HERO_SIZE_Y };
+							if (input->GetMouseLocation().x >= collision_LeftUpper.x && input->GetMouseLocation().x <= collision_RightLower.x && input->GetMouseLocation().y >= collision_LeftUpper.y && input->GetMouseLocation().y <= collision_RightLower.y)
+							{
+								switch (hero[h].color)
+								{
+								case eColor::eRed:
+									hero[h].image = container->GetImages("character_red_03.png")[0];
+									break;
+								case eColor::eBlue:
+									hero[h].image = container->GetImages("character_blue_03.png")[0];
+									break;
+								case eColor::eGreen:
+									hero[h].image = container->GetImages("character_green_03.png")[0];
+									break;
+								case eColor::ePink:
+									hero[h].image = container->GetImages("character_pink_03.png")[0];
+									break;
+								case eColor::eYellow:
+									hero[h].image = container->GetImages("character_yellow_03.png")[0];
+									break;
+								}
+							}
+							else
+							{
+								switch (hero[h].color)
+								{
+								case eColor::eRed:
+									hero[h].image = container->GetImages("character_red_01.png")[0];
+									break;
+								case eColor::eBlue:
+									hero[h].image = container->GetImages("character_blue_01.png")[0];
+									break;
+								case eColor::eGreen:
+									hero[h].image = container->GetImages("character_green_01.png")[0];
+									break;
+								case eColor::ePink:
+									hero[h].image = container->GetImages("character_pink_01.png")[0];
+									break;
+								case eColor::eYellow:
+									hero[h].image = container->GetImages("character_yellow_01.png")[0];
+									break;
+								}
+							}
+						}
+					}
 					break;
 				}
 			}
@@ -349,6 +400,27 @@ eSceneType PhaseOne::Update(float delta_second)
 										hero[h].change_flag = TRUE;
 										PlaySoundMem(container->GetSound("se_change_01.mp3"), DX_PLAYTYPE_BACK);
 										break;
+									}
+									else
+									{
+										switch (hero[h].color)
+										{
+										case eColor::eRed:
+											hero[h].image = container->GetImages("character_red_01.png")[0];
+											break;
+										case eColor::eBlue:
+											hero[h].image = container->GetImages("character_blue_01.png")[0];
+											break;
+										case eColor::eGreen:
+											hero[h].image = container->GetImages("character_green_01.png")[0];
+											break;
+										case eColor::ePink:
+											hero[h].image = container->GetImages("character_pink_01.png")[0];
+											break;
+										case eColor::eYellow:
+											hero[h].image = container->GetImages("character_yellow_01.png")[0];
+											break;
+										}
 									}
 								}
 							}
@@ -408,9 +480,9 @@ void PhaseOne::Draw() const
 	DrawGraph(5, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[0], TRUE);
 	DrawGraph(39, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[9], TRUE);
 	DrawGraph(73, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[10], TRUE);
-	draw_num = ((timelimit_count / 2) / 60) / 10 % 10;
+	draw_num = (timelimit_count / 60) / 10 % 10;
 	DrawGraph(107, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[draw_num], TRUE);
-	draw_num = ((timelimit_count / 2) / 60) / 1 % 10;
+	draw_num = (timelimit_count / 60) / 1 % 10;
 	DrawGraph(141, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[draw_num], TRUE);
 
 	//ヒーローの描画
@@ -446,6 +518,7 @@ void PhaseOne::Draw() const
 
 	if (start_flag)
 	{
+		DrawRotaGraph(640, 150, 0.6, 0.0, container->GetImages("character_set.png")[0], TRUE);
 		DrawGraph(0, 0, container->GetImages("ui_change_text.png")[0], TRUE);
 	}
 }
