@@ -86,8 +86,8 @@ void PhaseTwo::Initialize()
 
     // サウンド
     bgn_battle_01 = ac->GetSound("bgn_battle_01.mp3");
-    bgn_battle_02 = ac->GetSound("bgn_battle_02.mp3");
-    bgn_battle_03 = ac->GetSound("bgn_battle_03.mp3");
+    bgn_battle_01 = ac->GetSound("bgn_battle_02.mp3");
+    bgn_battle_01 = ac->GetSound("bgn_battle_03.mp3");
     se_battle_lose = ac->GetSound("se_battle_lose.mp3");
     se_battle_start = ac->GetSound("se_battle_start.mp3");
     se_battle_win = ac->GetSound("se_battle_win.mp3");
@@ -95,10 +95,13 @@ void PhaseTwo::Initialize()
     voice_battle_lose = ac->GetSound("voice_battle_lose.mp3");
     voice_battle_win = ac->GetSound("voice_battle_win.mp3");
 
+    // bgmの音量低下
+    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_01);
+    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_01);
+    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_01);
+
     PlaySoundMem(se_battle_start, DX_PLAYTYPE_BACK);
     PlaySoundMem(bgn_battle_01, DX_PLAYTYPE_BACK);
-
-
 }
 
 eSceneType PhaseTwo::Update(float delta_second)
@@ -121,7 +124,6 @@ eSceneType PhaseTwo::Update(float delta_second)
         {
         case eNone:
             now_anime = eAnimation::eNone;
-            is_start_push = false;
             select_heros.clear();
 
             PlaySoundMem(voice_battle_enemy_entry, DX_PLAYTYPE_BACK);
@@ -407,26 +409,25 @@ void PhaseTwo::CheckCollision()
 {
     InputManager* input = InputManager::Get();
 
-    if(now_anime==eAnimation::eNone)
+    if (now_anime == eAnimation::eNone)
     {
+        Vector2D mouse = input->GetMouseLocation();
+        is_start_push = false;
+
         // マウスが押された時の処理
-        if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick
-            && now_anime == eAnimation::eNone)
+        if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
         {
             // スクロールキャラクターの判定を行う
             CheckScrollCharacterCollision();
             // 場に出ているキャラクターの判定を行う
             CheckDeselectCollision();
-
-            Vector2D mouse = input->GetMouseLocation();
-
             // vsが押されたか判定
             if (mouse.x >= start_position.x - start_size.x && mouse.x <= start_position.x + start_size.x &&
                 mouse.y >= start_position.y - start_size.y && mouse.y <= start_position.y + start_size.y)
             {
+                is_start_push = true;
                 now_anime = eAnimation::eBattle;
                 draw_second = 0.1f;
-                is_start_push = true;
             }
 
             // 合計攻撃力を再計算

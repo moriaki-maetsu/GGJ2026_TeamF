@@ -40,6 +40,7 @@ private:
 	Vector2D start_size;		// ボタンの大きさ
 	bool is_start_push;			// 押されているか
 
+
 	// ヒーロー
     std::vector<PhaseTwoHeros> heros;			// 変身したヒーロー
     std::vector<PhaseTwoHeros*> select_heros;	// 戦闘するヒーロー
