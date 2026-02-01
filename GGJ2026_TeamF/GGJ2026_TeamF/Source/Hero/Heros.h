@@ -18,8 +18,8 @@ public:
 		return heros;
 	}
 
-	void SetHeros(std::vector<HeroData> data)
+	void SetHeros(HeroData data)
 	{
-		heros = data;
+		heros.emplace_back(data);
 	}
 };

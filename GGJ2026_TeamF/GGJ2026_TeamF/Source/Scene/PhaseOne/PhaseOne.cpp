@@ -2,6 +2,8 @@
 #include "PhaseOne.h"
 #include "../../Utility/AssetContainer.h"
 #include "../../Utility/InputManager.h"
+#include "../../Hero/Heros.h"
+#include "stdlib.h"
 
 void PhaseOne::Initialize()
 {
@@ -32,7 +34,7 @@ eSceneType PhaseOne::Update(float delta_second)
 			{
 				hero[i].position.x = 100.0f;
 				hero[i].position.y = 300.0f;
-				hero[i].power = 3;
+				hero[i].power = rand() % 5 + 1;
 				break;
 			}
 		}
@@ -50,6 +52,7 @@ eSceneType PhaseOne::Update(float delta_second)
 
 	//ヒーロー当たり判定処理
 	InputManager* input = InputManager::Get();
+	Heros* heros = Heros::Get();
 	if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
 	{
 		for (int i = 0; i < sizeof(hero) / sizeof(hero[0]); i++)
@@ -62,6 +65,7 @@ eSceneType PhaseOne::Update(float delta_second)
 				{
 					if (input->GetMouseLocation().y >= collision_LeftUpper.y && input->GetMouseLocation().y <= collision_RightLower.y)
 					{
+						heros->SetHeros(hero[i]);
 						hero[i].position.x = 0.0f;
 						hero[i].position.y = 0.0f;
 						hero[i].power = 0;
@@ -86,6 +90,12 @@ void PhaseOne::Draw() const
 			Vector2D collision_RightLower = { hero[i].position.x + HERO_SIZE_X , hero[i].position.y + HERO_SIZE_Y };
 			DrawBox(collision_LeftUpper.x, collision_LeftUpper.y, collision_RightLower.x, collision_RightLower.y, GetColor(255, 255, 255), FALSE);
 		}
+	}
+
+	Heros* heros = Heros::Get();
+	for (int i = 0; i < heros->GetHeros().size(); i++)
+	{
+		DrawFormatString(0, 0 + (i * 20), GetColor(255, 255, 255), "%d", heros->GetHeros().at(i).power);
 	}
 }
 
