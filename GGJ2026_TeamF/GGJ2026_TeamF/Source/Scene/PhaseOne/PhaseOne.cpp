@@ -186,6 +186,7 @@ eSceneType PhaseOne::Update(float delta_second)
 	//ヒーロー当たり判定処理
 	
 	Heros* heros = Heros::Get();
+	AssetContainer* container = AssetContainer::Get();
 	if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
 	{
 		for (int i = 0; i < sizeof(hero) / sizeof(hero[0]); i++)
@@ -198,6 +199,24 @@ eSceneType PhaseOne::Update(float delta_second)
 				{
 					if (input->GetMouseLocation().y >= collision_LeftUpper.y && input->GetMouseLocation().y <= collision_RightLower.y)
 					{
+						switch (hero[i].color)
+						{
+						case eColor::eRed:
+							hero[i].image = container->GetImages("character_red_02.png")[0];
+							break;
+						case eColor::eBlue:
+							hero[i].image = container->GetImages("character_blue_02.png")[0];
+							break;
+						case eColor::eGreen:
+							hero[i].image = container->GetImages("character_green_02.png")[0];
+							break;
+						case eColor::ePink:
+							hero[i].image = container->GetImages("character_pink_02.png")[0];
+							break;
+						case eColor::eYellow:
+							hero[i].image = container->GetImages("character_yellow_02.png")[0];
+							break;
+						}
 						heros->SetHeros(hero[i]);
 						hero[i].position.x = 0.0f;
 						hero[i].position.y = 0.0f;
