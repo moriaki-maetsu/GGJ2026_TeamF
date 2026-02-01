@@ -22,4 +22,9 @@ public:
 	{
 		heros.emplace_back(data);
 	}
+
+	void ResetHeros()
+	{
+		heros.clear();
+	}
 };

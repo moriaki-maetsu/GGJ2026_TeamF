@@ -17,6 +17,10 @@
 
 void PhaseOne::Initialize()
 {
+	Heros* heros = Heros::Get();
+
+	heros->ResetHeros();
+
 	AssetContainer* container = AssetContainer::Get();
 	hero[0].color = eColor::eRed;
 	hero[0].image = container->GetImages("character_red_01.png")[0];
