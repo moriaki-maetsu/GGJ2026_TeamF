@@ -463,7 +463,7 @@ eSceneType PhaseOne::Update(float delta_second)
 		}
 		++timelimit_count;
 
-		conveyer_x += 2;
+		conveyer_x += 4;
 		if (conveyer_x >= 84)
 		{
 			conveyer_x = 0;
