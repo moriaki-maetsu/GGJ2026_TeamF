@@ -3,8 +3,8 @@
 #include "Color.h"
 #include "DxLib.h"
 
-#define HERO_SIZE_X	(45)
-#define HERO_SIZE_Y	(60)
+#define HERO_SIZE_X	(50)
+#define HERO_SIZE_Y	(65)
 
 
 
