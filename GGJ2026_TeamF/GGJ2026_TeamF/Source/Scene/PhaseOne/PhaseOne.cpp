@@ -111,7 +111,7 @@ void PhaseOne::Initialize()
 	belt_click_se = container->GetSound("se_change_belt_push.mp3");
 	change_se = container->GetSound("se_change_01.mp3");
 	miss_se = container->GetSound("se_change_02.mp3");
-	ChangeVolumeSoundMem(255 * 20 / 100, bgm);
+	ChangeVolumeSoundMem(255 * 30 / 100, bgm);
 	ChangeVolumeSoundMem(255 * 40 / 100, belt_click_se);
 	ChangeVolumeSoundMem(255 * 30 / 100, change_se);
 	ChangeVolumeSoundMem(255 * 40 / 100, miss_se);

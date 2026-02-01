@@ -150,7 +150,7 @@ void ResultScene::Draw() const
 	
 	if (hero_ten != 0)
 	{
-		DrawRotaGraph(900-50, 720 / 2+20, 1.0, 0.0, ui_number[hero_ten], TRUE);
+		DrawRotaGraph(900-40, 720 / 2+20, 1.0, 0.0, ui_number[hero_ten], TRUE);
 		DrawRotaGraph(900 , 720 / 2+20, 1.0, 0.0, ui_number[hero_one], TRUE);
 	}
 	else
