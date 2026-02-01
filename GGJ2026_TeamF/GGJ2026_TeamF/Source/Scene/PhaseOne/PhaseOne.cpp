@@ -512,9 +512,9 @@ void PhaseOne::Draw() const
 		{
 			DrawRotaGraph(hero[i].position.x, hero[i].position.y, 1.0, 0.0, hero[i].image, TRUE);
 			DrawRotaGraph(hero[i].position.x + HERO_SIZE_X, hero[i].position.y + HERO_SIZE_Y, 0.7, 0.0, container->GetImages("ui_power_badge.png", 10, 10, 1, 120, 100)[hero[i].power - 1], TRUE);
-			Vector2D collision_LeftUpper = { hero[i].position.x - HERO_SIZE_X , hero[i].position.y - HERO_SIZE_Y };
+			/*Vector2D collision_LeftUpper = { hero[i].position.x - HERO_SIZE_X , hero[i].position.y - HERO_SIZE_Y };
 			Vector2D collision_RightLower = { hero[i].position.x + HERO_SIZE_X , hero[i].position.y + HERO_SIZE_Y };
-			DrawBox(collision_LeftUpper.x, collision_LeftUpper.y, collision_RightLower.x, collision_RightLower.y, GetColor(255, 255, 255), FALSE);
+			DrawBox(collision_LeftUpper.x, collision_LeftUpper.y, collision_RightLower.x, collision_RightLower.y, GetColor(255, 255, 255), FALSE);*/
 		}
 	}
 
