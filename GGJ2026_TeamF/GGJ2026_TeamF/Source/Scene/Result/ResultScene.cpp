@@ -3,18 +3,23 @@
 #include"../../Utility/AssetContainer.h"
 #include"../../Utility/InputManager.h"
 
-int hero_red, hero_blue, hero_green, hero_yellow,hero_pink;
+std::vector<HeroData> data;
+
+int character_set, total_hero, bg_result;
+
+
+std::vector<int> ui_number;
 
 
 void ResultScene::Initialize()
 {
 	AssetContainer* container = AssetContainer::Get();
-	 hero_red = container->GetImages("character_red_01.png")[0];
-	 hero_blue = container->GetImages("character_blue_01.png")[0];
-	 hero_green = container->GetImages("character_green_01.png")[0];
-	 hero_yellow = container->GetImages("character_yellow_01.png")[0];
-	 hero_pink = container->GetImages("character_pink_01.png")[0];
-
+	character_set = container->GetImages("character_set.png")[0];
+	ui_number = container->GetImages("ui_number_01.png",10,10,1,50,100);
+	bg_result= container->GetImages("bg_result_01.png")[0];
+	data = Heros::Get()->GetHeros();
+	total_hero = 5;//data.size();
+	
 }
 
 eSceneType ResultScene::Update(float delta_second)
@@ -26,13 +31,21 @@ eSceneType ResultScene::Update(float delta_second)
 void ResultScene::Draw() const
 {
 
-	DrawRotaGraph(1280 / 2, 720 / 2, 0.5,0.0, hero_red, TRUE);
-	DrawRotaGraph(1280 / 2+100, 720 / 2, 0.5,0.0, hero_blue, TRUE);
-	DrawRotaGraph(1280 / 2-100, 720 / 2, 0.5,0.0, hero_green, TRUE);
-	DrawRotaGraph(1280 / 2+250, 720 / 2, 0.5,0.0, hero_yellow, TRUE);
-	DrawRotaGraph(1280 / 2-250, 720 / 2, 0.5,0.0, hero_pink, TRUE);
-
-
+	DrawRotaGraph(1280 / 2, 720 / 2, 1.0, 0.0, bg_result, TRUE);
+	DrawRotaGraph(1280 / 2, 720 / 2+200, 0.5,0.0, character_set, TRUE);
+	
+	
+	int one = total_hero % 10;
+	int ten = total_hero / 10 % 10;
+	if (ten != 0)
+	{
+		DrawRotaGraph(1280 / 2, 720 / 2, 1.5, 0.0, ui_number[ten], TRUE);
+		DrawRotaGraph(1280 / 2 + 50, 720 / 2, 1.5, 0.0, ui_number[one], TRUE);
+	}
+	else
+	{
+		DrawRotaGraph(1280 / 2 , 720 / 2, 1.5, 0.0, ui_number[one], TRUE);
+	}
 }
 
 void ResultScene::Finalize()

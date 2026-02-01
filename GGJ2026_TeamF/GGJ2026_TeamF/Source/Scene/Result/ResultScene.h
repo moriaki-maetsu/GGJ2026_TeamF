@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "../SceneBase.h"
+#include"../../Hero/Heros.h"
 
 class ResultScene : public SceneBase
 {
