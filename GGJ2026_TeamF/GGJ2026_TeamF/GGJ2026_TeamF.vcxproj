@@ -46,6 +46,7 @@
     <ClInclude Include="Source\Scene\Ending\EndingScene.h" />
     <ClInclude Include="Source\Scene\PhaseOne\PhaseOne.h" />
     <ClInclude Include="Source\Scene\PhaseTwo\PhaseTwo.h" />
+    <ClInclude Include="Source\Scene\Result\ResultData.h" />
     <ClInclude Include="Source\Scene\Result\ResultScene.h" />
     <ClInclude Include="Source\Scene\SceneBase.h" />
     <ClInclude Include="Source\Scene\SceneFactory.h" />

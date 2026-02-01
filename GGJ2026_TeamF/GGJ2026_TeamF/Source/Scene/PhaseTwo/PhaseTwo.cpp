@@ -2,13 +2,14 @@
 #include "../../Utility/AssetContainer.h"
 #include "../../Utility/InputManager.h"
 #include "../../Hero/Heros.h"
+#include "../Result/ResultData.h"
 #include <DxLib.h>
 
-#define LIMIT_LEFT  (100.0f)    // スクロールの左端座標
-#define LIMIT_RIGHT (1100.0f)   // スクロールの右端座標
+#define LIMIT_LEFT  (0.0f)      // スクロールの左端座標
+#define LIMIT_RIGHT (1280.0f)   // スクロールの右端座標
 
 #define CELL_WIDTH  (HERO_SIZE_X * 2.0f + 20.0f)        // 1キャラサイズ+左右の幅
-#define TOTAL_LOOP_WIDTH (heros.size() * CELL_WIDTH)    // 全体のループ幅
+#define TOTAL_LOOP_WIDTH ((heros.size() * CELL_WIDTH>LIMIT_RIGHT)?(heros.size() * CELL_WIDTH):LIMIT_RIGHT)    // 全体のループ幅
 
 #define HERO_IMAGE_SIZE_X   (150)   // 元画像のサイズ
 #define HERO_IMAGE_SIZE_Y   (200)   // 元画像のサイズ
@@ -34,17 +35,19 @@ void PhaseTwo::Initialize()
         int blue = ac->GetImages("character_blue_02.png")[0];
         int green = ac->GetImages("character_green_02.png")[0];
         int pink = ac->GetImages("character_pink_02.png")[0];
+        int yellow = ac->GetImages("character_yellow_02.png")[0];
 
         int i = 1;
         for (int j = 0; j < 4; j++)
         {
-            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eRed,i++,red }, false, false });
-            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eBlue,i++,blue }, false, false });
-            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eGreen,i++,green }, false, false });
-            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::ePink,i++,pink }, false, false });
+            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eRed,(i++)%10,red }, false, false });
+            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eBlue,(i++) % 10,blue }, false, false });
+            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eGreen,(i++) % 10,green }, false, false });
+            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::ePink,(i++) % 10,pink }, false, false });
+            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eYellow,(i++) % 10,yellow }, false, false });
         }
     }
-
+    // パワー画像
     power_badge_image = ac->GetImages("ui_power_badge.png", 10, 10, 1, 120, 100);
 
     // レスラー
@@ -52,12 +55,14 @@ void PhaseTwo::Initialize()
     wrestler_power = 5;
 
     // 戦闘ボタン
-    start_image = AssetContainer::Get()->GetImages("ProtoVSUI.png")[0];
-    start_position = { 640.0f,360.0f };
-    start_size = 64.0f;    // 画像サイズの半分の値
+    start_image[0] = AssetContainer::Get()->GetImages("ui_battle_button_start_01.png")[0];
+    start_image[1] = AssetContainer::Get()->GetImages("ui_battle_button_start_02.png")[0];
+    start_position = { 640.0f,650.0f };
+    start_size = { 150.0f,40.0f };    // 画像サイズの半分の値
 
     // 背景
     background = ac->GetImages("bg_battle_01.png")[0];
+    conveyer = ac->GetImages("conveyer.png")[0];
 }
 
 eSceneType PhaseTwo::Update(float delta_second)
@@ -98,6 +103,7 @@ eSceneType PhaseTwo::Update(float delta_second)
 
     if (gameend)
     {
+        ResultData::Get()->SetWrestlerCount(wrestler_count);
         return eSceneType::eResult;
     }
 
@@ -108,6 +114,7 @@ void PhaseTwo::Draw() const
 {
     // 背景の描画
     DrawRotaGraphF(640.0f, 360.0f, 1.f, 0.0f, background, TRUE);
+    DrawRotaGraphF(640.0f, 100, 0.35f, 0.0f, conveyer, TRUE);
 
     DrawLineAA(LIMIT_LEFT, 0.0f, LIMIT_LEFT, HERO_SIZE_Y * 2.0f, 0xFFFFFF, 5.0f);
     DrawLineAA(LIMIT_RIGHT, 0.0f, LIMIT_RIGHT, HERO_SIZE_Y * 2.0f, 0xFFFFFF, 5.0f);
@@ -169,21 +176,51 @@ void PhaseTwo::Draw() const
             hero.data.image, TRUE
         );
 
+        // 強さの描画
+        Vector2D badgeoffset = { -20.0f,-30.0f };
+        DrawRotaGraphF(right+ badgeoffset.x, down+ badgeoffset.y, 0.7f, 0.0f, power_badge_image[hero.data.power], TRUE);
+
+
         // 当たり判定
         DrawBoxAA(left, up, right, down, 0xFFFFFF, FALSE);
         // データの描画
-        DrawFormatStringF(left, down + 5.0f, 0xFFFF00, "Index: %d", i);
-        DrawFormatStringF(left, down + 20.0f, 0xFFFF00, "Power: %d", hero.data.power);
+        //DrawFormatStringF(left, down + 5.0f, 0xFFFF00, "Index: %d", i);
+        //DrawFormatStringF(left, down + 20.0f, 0xFFFF00, "Power: %d", hero.data.power);
     }
 
     // 場に出ているのヒーローの描画
     for (size_t i = 0; i < select_heros.size(); i++)
     {
         const PhaseTwoHeros* select = select_heros[i];
-        Vector2D position{ 100.0f * (i + 1), 500.0f };
-        DrawRotaGraphF(position.x, position.y, 0.5f, 0.0f, select->data.image, TRUE);
+        Vector2D position = { 0.0f,0.0f };
+
+        Vector2D center = { 500.0f,450.0f };
+
+        switch (i)
+        {
+        case 0:
+            position = center;
+            break;
+        case 1:
+            position = { center.x - 100,center.y - 150 };
+            break;
+        case 2:
+            position = { center.x - 100,center.y + 150 };
+            break;
+        case 3:
+            position = { center.x - 200,center.y - 200 };
+            break;
+        case 4:
+            position = { center.x - 200,center.y + 200 };
+            break;
+
+
+        }
+        DrawRotaGraphF(position.x, position.y, 1.4f, 0.0f, select->data.image, TRUE);
+        Vector2D badgeoffset = { -20.0f,-30.0f };
+        DrawRotaGraphF(position.x+HERO_SIZE_X + badgeoffset.x, position.y+HERO_SIZE_Y + badgeoffset.y, 0.84f, 0.0f, power_badge_image[select_heros[i]->data.power], TRUE);
         // 当たり判定
-        DrawBoxAA(position.x - HERO_SIZE_X, position.y - HERO_SIZE_Y, position.x + HERO_SIZE_X, position.y + HERO_SIZE_Y, 0xFFFFFF, FALSE);
+        //DrawBoxAA(position.x - HERO_SIZE_X, position.y - HERO_SIZE_Y, position.x + HERO_SIZE_X, position.y + HERO_SIZE_Y, 0xFFFFFF, FALSE);
     }
     DrawFormatStringF(150.0f, 380.0f, 0xffffff, "合計パワー:%d", totalpower);
 
@@ -192,14 +229,10 @@ void PhaseTwo::Draw() const
     DrawFormatStringF(1000.0f, 380.0f, 0xffffff, "レスラーパワー:%d", wrestler_power);
 
     // 戦闘スタートボタン
-    DrawRotaGraphF(start_position.x, start_position.y, 1.f, 0.0f, start_image, FALSE);
+    DrawRotaGraphF(start_position.x, start_position.y, 1.f, 0.0f, start_image[is_start_push ? 1 : 0], TRUE);
 }
 
 void PhaseTwo::Finalize()
-{
-}
-
-void PhaseTwo::layoutHeroes()
 {
 }
 
@@ -221,6 +254,7 @@ void PhaseTwo::CheckCollision()
         if (mouse.x >= start_position.x - start_size.x && mouse.x <= start_position.x + start_size.x &&
             mouse.y >= start_position.y - start_size.y && mouse.y <= start_position.y + start_size.y)
         {
+            is_start_push = true;
             if (totalpower >= wrestler_power)
             {
                 // 勝ち

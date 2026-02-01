@@ -32,12 +32,14 @@ private:
 	int wrestler_count;	// 倒した数
 	
 	// ボタン
-	int start_image;			// 戦闘開始ボタン画像
+	int start_image[2];			// 戦闘開始ボタン画像
 	Vector2D start_position;	// 描画座標
 	Vector2D start_size;		// ボタンの大きさ
+	bool is_start_push;			// 押されているか
 
 	// 背景
 	int background;	// 背景画像
+	int conveyer;	// ベルトコンベア
 
 public:
 	PhaseTwo()
@@ -48,7 +50,8 @@ public:
 		, wrestler_image(0)
 		, wrestler_power(0)
 		, wrestler_count(0)
-		, start_image(0)
+		, start_image{0}
+		, is_start_push(false)
 	{
 
 	}
@@ -71,10 +74,8 @@ public:
 	}
 
 private:
-	// 未選択ヒーローを横スクロール用に配置する処理
-	void layoutHeroes();
 
-public:
+private:
 	// 当たり判定関数
 
 	// 当たり判定チェック処理を呼び出す関数
@@ -84,7 +85,7 @@ public:
 	// 選択解除の衝突チェック
 	void CheckDeselectCollision();
 
-public:
+private:
 
 	// 次のレスラーにする処理
 	void SetNextWrestler();
