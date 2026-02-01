@@ -13,6 +13,7 @@
 #define YELLOW_BELT_X (760.0f)
 #define LANE_1_Y (150.0f)
 #define LANE_2_Y (300.0f)
+#define TIMELIMIT (1800)
 
 void PhaseOne::Initialize()
 {
@@ -106,6 +107,8 @@ void PhaseOne::Initialize()
 
 	display_time_count = 0;
 	display_time = 120 + rand() % 120;
+
+	timelimit_count = 0;
 }
 
 eSceneType PhaseOne::Update(float delta_second)
@@ -351,7 +354,7 @@ eSceneType PhaseOne::Update(float delta_second)
 		}
 	}
 
-	if (heros->GetHeros().size() >= 10)
+	if (++timelimit_count > TIMELIMIT)
 	{
 		return eSceneType::ePhaseTwo;
 	}
@@ -365,6 +368,17 @@ void PhaseOne::Draw() const
 
 	DrawGraph(0, 0, container->GetImages("bg_change_01.png")[0], TRUE);
 	DrawRotaGraph(640, 250, 0.5, 0.0, container->GetImages("conveyer.png")[0], TRUE);
+
+	//時間の描画
+	int draw_num = 0;
+	DrawGraph(5, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[0], TRUE);
+	DrawGraph(39, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[9], TRUE);
+	DrawGraph(73, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[10], TRUE);
+	draw_num = (timelimit_count / 60) / 10 % 10;
+	DrawGraph(107, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[draw_num], TRUE);
+	draw_num = (timelimit_count / 60) / 1 % 10;
+	DrawGraph(141, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[draw_num], TRUE);
+
 	//ヒーローの描画
 	for (int i = 0; i < sizeof(hero) / sizeof(hero[0]); i++)
 	{
