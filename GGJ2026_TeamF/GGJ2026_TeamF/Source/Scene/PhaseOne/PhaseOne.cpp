@@ -120,6 +120,8 @@ void PhaseOne::Initialize()
 
 	start_flag = TRUE;
 	start_count = 0;
+
+	conveyer_x = 0;
 }
 
 eSceneType PhaseOne::Update(float delta_second)
@@ -204,7 +206,7 @@ eSceneType PhaseOne::Update(float delta_second)
 			{
 				if (hero[i].change_flag)
 				{
-					hero[i].position.y -= 3.0f;
+					hero[i].position.y -= 5.0f;
 					if (hero[i].position.y <= 0.0f)
 					{
 						hero[i].position.x = 0.0f;
@@ -298,12 +300,12 @@ eSceneType PhaseOne::Update(float delta_second)
 		}
 		else if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::ePressed)
 		{
-			for (int i = 0; i < sizeof(belt) / sizeof(belt[0]); i++)
+			for (int b = 0; b < sizeof(belt) / sizeof(belt[0]); b++)
 			{
-				if (belt[i].drag_flag)
+				if (belt[b].drag_flag)
 				{
-					belt[i].position.x = input->GetMouseLocation().x;
-					belt[i].position.y = input->GetMouseLocation().y;
+					belt[b].position.x = input->GetMouseLocation().x;
+					belt[b].position.y = input->GetMouseLocation().y;
 
 					for (int h = 0; h < sizeof(hero) / sizeof(hero[0]); h++)
 					{
@@ -313,23 +315,26 @@ eSceneType PhaseOne::Update(float delta_second)
 							Vector2D collision_RightLower = { hero[h].position.x + HERO_SIZE_X , hero[h].position.y + HERO_SIZE_Y };
 							if (input->GetMouseLocation().x >= collision_LeftUpper.x && input->GetMouseLocation().x <= collision_RightLower.x && input->GetMouseLocation().y >= collision_LeftUpper.y && input->GetMouseLocation().y <= collision_RightLower.y)
 							{
-								switch (hero[h].color)
+								if (belt[b].color == hero[h].color)
 								{
-								case eColor::eRed:
-									hero[h].image = container->GetImages("character_red_03.png")[0];
-									break;
-								case eColor::eBlue:
-									hero[h].image = container->GetImages("character_blue_03.png")[0];
-									break;
-								case eColor::eGreen:
-									hero[h].image = container->GetImages("character_green_03.png")[0];
-									break;
-								case eColor::ePink:
-									hero[h].image = container->GetImages("character_pink_03.png")[0];
-									break;
-								case eColor::eYellow:
-									hero[h].image = container->GetImages("character_yellow_03.png")[0];
-									break;
+									switch (hero[h].color)
+									{
+									case eColor::eRed:
+										hero[h].image = container->GetImages("character_red_03.png")[0];
+										break;
+									case eColor::eBlue:
+										hero[h].image = container->GetImages("character_blue_03.png")[0];
+										break;
+									case eColor::eGreen:
+										hero[h].image = container->GetImages("character_green_03.png")[0];
+										break;
+									case eColor::ePink:
+										hero[h].image = container->GetImages("character_pink_03.png")[0];
+										break;
+									case eColor::eYellow:
+										hero[h].image = container->GetImages("character_yellow_03.png")[0];
+										break;
+									}
 								}
 							}
 							else
@@ -457,6 +462,12 @@ eSceneType PhaseOne::Update(float delta_second)
 			}
 		}
 		++timelimit_count;
+
+		conveyer_x += 2;
+		if (conveyer_x >= 84)
+		{
+			conveyer_x = 0;
+		}
 	}
 
 	if (timelimit_count > TIMELIMIT)
@@ -473,7 +484,7 @@ void PhaseOne::Draw() const
 	AssetContainer* container = AssetContainer::Get();
 
 	DrawGraph(0, 0, container->GetImages("bg_change_01.png")[0], TRUE);
-	DrawRotaGraph(640, 250, 0.5, 0.0, container->GetImages("conveyer.png")[0], TRUE);
+	DrawRotaGraph(640 + conveyer_x, 250, 0.5, 0.0, container->GetImages("conveyer.png")[0], TRUE);
 
 	//時間の描画
 	int draw_num = 0;
@@ -521,6 +532,7 @@ void PhaseOne::Draw() const
 		DrawRotaGraph(640, 150, 0.6, 0.0, container->GetImages("character_set.png")[0], TRUE);
 		DrawGraph(0, 0, container->GetImages("ui_change_text.png")[0], TRUE);
 	}
+	
 }
 
 void PhaseOne::Finalize()

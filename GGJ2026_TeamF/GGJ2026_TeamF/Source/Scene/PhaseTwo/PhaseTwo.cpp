@@ -23,8 +23,14 @@ void PhaseTwo::Initialize()
     heros.reserve(raw_data.size());
 
     // ƒf[ƒ^‚ğ‰Šú‰»
-    for (const HeroData& data : raw_data) {
+    for (const HeroData& data : raw_data)
+    {
         heros.push_back({ data, false, false });
+    }
+
+    for (int i = 0; i < heros.size(); i++)
+    {
+        heros[i].data.position.y = 80.0f;
     }
 
     AssetContainer* ac = AssetContainer::Get();
