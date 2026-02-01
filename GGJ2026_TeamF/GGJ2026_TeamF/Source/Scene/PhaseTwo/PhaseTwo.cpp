@@ -57,9 +57,9 @@ void PhaseTwo::Initialize()
     heros_power_ui_image = ac->GetImages("ui_power_plate_player.png")[0];           // ‘UŒ‚—Í”wŒiUI
 
     // ƒŒƒXƒ‰[
-	wrestler_image[0] = ac->GetImages("enemy_01.png")[0];
-	wrestler_image[1] = ac->GetImages("enemy_02.png")[0];
-	wrestler_image[2]= ac->GetImages("enemy_03.png")[0];
+    wrestler_image[0] = ac->GetImages("enemy_01.png")[0];
+    wrestler_image[1] = ac->GetImages("enemy_02.png")[0];
+    wrestler_image[2] = ac->GetImages("enemy_03.png")[0];
     wrestler_power_ui_image[0] = ac->GetImages("ui_power_plate_enemy_01.png")[0];
     wrestler_power_ui_image[1] = ac->GetImages("ui_power_plate_enemy_02.png")[0];
     wrestler_power_ui_image[2] = ac->GetImages("ui_power_plate_enemy_03.png")[0];
@@ -97,11 +97,17 @@ void PhaseTwo::Initialize()
 
     // bgm‚Ì‰¹—Ê’á‰º
     ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_01);
-    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_01);
-    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_01);
+    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_02);
+    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_03);
+    ChangeVolumeSoundMem(255 * 80 / 100, se_battle_lose);
+    ChangeVolumeSoundMem(255 * 80 / 100, se_battle_start);
+    ChangeVolumeSoundMem(255 * 80 / 100, se_battle_win);
+    ChangeVolumeSoundMem(255 * 80 / 100, voice_battle_enemy_entry);
+    ChangeVolumeSoundMem(255 * 80 / 100, voice_battle_lose);
+    ChangeVolumeSoundMem(255 * 80 / 100, voice_battle_win);
 
     PlaySoundMem(se_battle_start, DX_PLAYTYPE_BACK);
-    PlaySoundMem(bgn_battle_01, DX_PLAYTYPE_BACK);
+    PlaySoundMem(bgn_battle_01, DX_PLAYTYPE_LOOP);
 }
 
 eSceneType PhaseTwo::Update(float delta_second)
@@ -137,8 +143,6 @@ eSceneType PhaseTwo::Update(float delta_second)
                 ),
                 heros.end()
             );
-
-
             break;
 
         case eBattle:
@@ -216,7 +220,7 @@ eSceneType PhaseTwo::Update(float delta_second)
     // ƒq[ƒ[‚ªŽc‚Á‚Ä‚¢‚È‚©‚Á‚½‚ç
     if (heros.empty())
     {
-        gameend = true;
+        now_anime = eLose;
     }
 
     if (gameend)
@@ -414,6 +418,9 @@ void PhaseTwo::Draw() const
 
 void PhaseTwo::Finalize()
 {
+    StopSoundMem(bgn_battle_01);
+    StopSoundMem(bgn_battle_02);
+    StopSoundMem(bgn_battle_03);
 }
 
 void PhaseTwo::CheckCollision()
@@ -617,27 +624,52 @@ void PhaseTwo::SetNextWrestler()
         wrestler_power = 45;
     }
 
-    wrestler_rank = 0;
-    if (wrestler_power > 20)
+    if (wrestler_power < 20)
+    {
+        if (CheckSoundMem(bgn_battle_02))
+        {
+            StopSoundMem(bgn_battle_02);
+        }
+        if (CheckSoundMem(bgn_battle_03))
+        {
+            StopSoundMem(bgn_battle_03);
+        }
+        wrestler_rank = 0;
+        if (!CheckSoundMem(bgn_battle_01))
+        {
+            PlaySoundMem(bgn_battle_01, DX_PLAYTYPE_LOOP);
+        }
+    }
+    else if (wrestler_power < 35)
     {
         if (CheckSoundMem(bgn_battle_01))
         {
             StopSoundMem(bgn_battle_01);
         }
-        wrestler_rank = 1;
-        if (wrestler_power <= 35)
+        if (CheckSoundMem(bgn_battle_03))
         {
-            PlaySoundMem(bgn_battle_02, DX_PLAYTYPE_BACK);
+            StopSoundMem(bgn_battle_03);
         }
-        else
+        wrestler_rank = 1;
+        if (!CheckSoundMem(bgn_battle_02))
         {
-            if (CheckSoundMem(bgn_battle_02))
-            {
-                StopSoundMem(bgn_battle_02);
-            }
-
-            wrestler_rank = 2;
-            PlaySoundMem(bgn_battle_03, DX_PLAYTYPE_BACK);
+            PlaySoundMem(bgn_battle_02, DX_PLAYTYPE_LOOP);
+        }
+    }
+    else
+    {
+        if (CheckSoundMem(bgn_battle_01))
+        {
+            StopSoundMem(bgn_battle_01);
+        }
+        if (CheckSoundMem(bgn_battle_02))
+        {
+            StopSoundMem(bgn_battle_02);
+        }
+        wrestler_rank = 2;
+        if (!CheckSoundMem(bgn_battle_03))
+        {
+            PlaySoundMem(bgn_battle_03, DX_PLAYTYPE_LOOP);
         }
     }
 }
