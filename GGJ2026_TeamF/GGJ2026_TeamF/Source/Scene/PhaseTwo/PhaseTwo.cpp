@@ -29,7 +29,7 @@ void PhaseTwo::Initialize()
 
     AssetContainer* ac = AssetContainer::Get();
 
-    if(heros.empty())
+    if (heros.empty())
     {
         int red = ac->GetImages("character_red_02.png")[0];
         int blue = ac->GetImages("character_blue_02.png")[0];
@@ -40,19 +40,31 @@ void PhaseTwo::Initialize()
         int i = 1;
         for (int j = 0; j < 4; j++)
         {
-            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eRed,(i++)%10,red }, false, false });
+            heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eRed,(i++) % 10,red }, false, false });
             heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eBlue,(i++) % 10,blue }, false, false });
             heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eGreen,(i++) % 10,green }, false, false });
             heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::ePink,(i++) % 10,pink }, false, false });
             heros.push_back({ { Vector2D{i * CELL_WIDTH + (CELL_WIDTH / 2.0f),100.0f},eColor::eYellow,(i++) % 10,yellow }, false, false });
         }
     }
-    // パワー画像
-    power_badge_image = ac->GetImages("ui_power_badge.png", 10, 10, 1, 120, 100);
+
+    for (int i = 0; i < heros.size(); i++)
+    {
+        heros[i].data.position.y = 80.0f;
+    }
+
+    power_badge_image = ac->GetImages("ui_power_badge.png", 10, 10, 1, 120, 100);   // 攻撃力バッジ
+    heros_power_ui_image = ac->GetImages("ui_power_plate_player.png")[0];           // 総攻撃力背景UI
 
     // レスラー
-	wrestler_image = AssetContainer::Get()->GetImages("enemy_01.png")[0];
+	wrestler_image[0] = AssetContainer::Get()->GetImages("enemy_01.png")[0];
+	wrestler_image[1] = AssetContainer::Get()->GetImages("enemy_02.png")[0];
+	wrestler_image[2]= AssetContainer::Get()->GetImages("enemy_03.png")[0];
+    wrestler_power_ui_image[0] = ac->GetImages("ui_power_plate_enemy_01.png")[0];
+    wrestler_power_ui_image[1] = ac->GetImages("ui_power_plate_enemy_02.png")[0];
+    wrestler_power_ui_image[2] = ac->GetImages("ui_power_plate_enemy_03.png")[0];
     wrestler_power = 5;
+    wrestler_rank = 0;
 
     // 戦闘ボタン
     start_image[0] = AssetContainer::Get()->GetImages("ui_battle_button_start_01.png")[0];
@@ -60,9 +72,11 @@ void PhaseTwo::Initialize()
     start_position = { 640.0f,650.0f };
     start_size = { 150.0f,40.0f };    // 画像サイズの半分の値
 
-    // 背景
+    // システム
     background = ac->GetImages("bg_battle_01.png")[0];
-    conveyer = ac->GetImages("conveyer.png")[0];
+    conveyer_image = ac->GetImages("conveyer.png")[0];
+    power_number_image = ac->GetImages("ui_number_02.png", 11, 11, 1, 34, 68);
+
 }
 
 eSceneType PhaseTwo::Update(float delta_second)
@@ -114,7 +128,50 @@ void PhaseTwo::Draw() const
 {
     // 背景の描画
     DrawRotaGraphF(640.0f, 360.0f, 1.f, 0.0f, background, TRUE);
-    DrawRotaGraphF(640.0f, 100, 0.35f, 0.0f, conveyer, TRUE);
+    // ベルトコンベア
+    DrawRotaGraphF(640.0f, 80.0f, 0.35f, 0.0f, conveyer_image, TRUE);
+    // レスラーの攻撃力背景UI
+    DrawRotaGraphF(900.0f, 270.0f, 1.0f, 0.0f, wrestler_power_ui_image[wrestler_rank], TRUE);
+    // 合計攻撃力の背景UI
+    DrawRotaGraphF(400.0f, 270.0f, 1.0f, 0.0f, heros_power_ui_image, TRUE);
+    // 合計攻撃力
+    int temp_power = totalpower;
+    float draw_x = 480.0f; // 描画の基準位置（1の位の位置）
+    float spacing = 16.0f; // 数字同士の間隔
+
+    // 最低でも1回は実行（0の場合でも0を表示）
+    do {
+        // 1. 一番下の桁を取り出す (例: 123 -> 3)
+        int digit = temp_power % 10;
+
+        // 2. その桁の画像を描画
+        DrawRotaGraphF(draw_x, 275.0f, 0.5f, 0.0f, power_number_image[digit], TRUE);
+
+        // 3. 次の桁のために描画位置を左にずらし、数値を10で割る
+        draw_x -= spacing;
+        temp_power /= 10;
+
+    } while (temp_power > 0);
+
+    // レスラーの攻撃力
+    temp_power = wrestler_power;
+    draw_x = 980.0f; // 描画の基準位置（1の位の位置）
+    spacing = 16.0f; // 数字同士の間隔
+
+    // 最低でも1回は実行（0の場合でも0を表示）
+    do {
+        // 1. 一番下の桁を取り出す (例: 123 -> 3)
+        int digit = temp_power % 10;
+
+        // 2. その桁の画像を描画
+        DrawRotaGraphF(draw_x, 290.0f, 0.5f, 0.0f, power_number_image[digit], TRUE);
+
+        // 3. 次の桁のために描画位置を左にずらし、数値を10で割る
+        draw_x -= spacing;
+        temp_power /= 10;
+
+    } while (temp_power > 0);
+
 
     DrawLineAA(LIMIT_LEFT, 0.0f, LIMIT_LEFT, HERO_SIZE_Y * 2.0f, 0xFFFFFF, 5.0f);
     DrawLineAA(LIMIT_RIGHT, 0.0f, LIMIT_RIGHT, HERO_SIZE_Y * 2.0f, 0xFFFFFF, 5.0f);
@@ -178,7 +235,8 @@ void PhaseTwo::Draw() const
 
         // 強さの描画
         Vector2D badgeoffset = { -20.0f,-30.0f };
-        DrawRotaGraphF(right+ badgeoffset.x, down+ badgeoffset.y, 0.7f, 0.0f, power_badge_image[hero.data.power], TRUE);
+        //DrawRotaGraphF(right + badgeoffset.x, down + badgeoffset.y, 0.7f, 0.0f, power_badge_image[hero.data.power], TRUE);
+        DrawRotaGraphF(world_x - HERO_SIZE_Y + badgeoffset.x, down + badgeoffset.y, 0.7f, 0.0f, power_badge_image[hero.data.power], TRUE);
 
 
         // 当たり判定
@@ -194,7 +252,7 @@ void PhaseTwo::Draw() const
         const PhaseTwoHeros* select = select_heros[i];
         Vector2D position = { 0.0f,0.0f };
 
-        Vector2D center = { 500.0f,450.0f };
+        Vector2D center = { 500.0f,500.0f };
 
         switch (i)
         {
@@ -202,31 +260,29 @@ void PhaseTwo::Draw() const
             position = center;
             break;
         case 1:
-            position = { center.x - 100,center.y - 150 };
+            position = { center.x - 120,center.y - 60 };
             break;
         case 2:
-            position = { center.x - 100,center.y + 150 };
+            position = { center.x - 120,center.y + 60 };
             break;
         case 3:
-            position = { center.x - 200,center.y - 200 };
+            position = { center.x - 240,center.y - 120 };
             break;
         case 4:
-            position = { center.x - 200,center.y + 200 };
+            position = { center.x - 240,center.y + 120 };
             break;
-
-
         }
-        DrawRotaGraphF(position.x, position.y, 1.4f, 0.0f, select->data.image, TRUE);
+        DrawRotaGraphF(position.x, position.y, 1.2f, 0.0f, select->data.image, TRUE);
         Vector2D badgeoffset = { -20.0f,-30.0f };
         DrawRotaGraphF(position.x+HERO_SIZE_X + badgeoffset.x, position.y+HERO_SIZE_Y + badgeoffset.y, 0.84f, 0.0f, power_badge_image[select_heros[i]->data.power], TRUE);
         // 当たり判定
         //DrawBoxAA(position.x - HERO_SIZE_X, position.y - HERO_SIZE_Y, position.x + HERO_SIZE_X, position.y + HERO_SIZE_Y, 0xFFFFFF, FALSE);
     }
-    DrawFormatStringF(150.0f, 380.0f, 0xffffff, "合計パワー:%d", totalpower);
+    //DrawFormatStringF(150.0f, 380.0f, 0xffffff, "合計パワー:%d", totalpower);
 
     // レスラーの描画
-    DrawRotaGraphF(1000.0f, 500.0f, 0.5f, 0.0f, wrestler_image, TRUE);
-    DrawFormatStringF(1000.0f, 380.0f, 0xffffff, "レスラーパワー:%d", wrestler_power);
+    DrawRotaGraphF(900.0f, 500.0f, 0.5f, 0.0f, wrestler_image[wrestler_rank], TRUE);
+    //DrawFormatStringF(1000.0f, 380.0f, 0xffffff, "レスラーパワー:%d", wrestler_power);
 
     // 戦闘スタートボタン
     DrawRotaGraphF(start_position.x, start_position.y, 1.f, 0.0f, start_image[is_start_push ? 1 : 0], TRUE);
@@ -377,7 +433,29 @@ void PhaseTwo::CheckDeselectCollision()
         std::remove_if(select_heros.begin(), select_heros.end(), [&](PhaseTwoHeros* hero) {
             // 1. このヒーローが「場」で表示されるべき位置を計算
             // i 番目のヒーローとして位置を特定する
-            Vector2D position{ 100.0f * (i + 1), 500.0f };
+
+            Vector2D position = { 0.0f,0.0f };
+
+            Vector2D center = { 500.0f,500.0f };
+
+            switch (i)
+            {
+            case 0:
+                position = center;
+                break;
+            case 1:
+                position = { center.x - 120,center.y - 60 };
+                break;
+            case 2:
+                position = { center.x - 120,center.y + 60 };
+                break;
+            case 3:
+                position = { center.x - 240,center.y - 120 };
+                break;
+            case 4:
+                position = { center.x - 240,center.y + 120 };
+                break;
+            }
 
             // 判定が終わる前にカウンターを進める
             i++;
@@ -403,8 +481,15 @@ void PhaseTwo::SetNextWrestler()
 {
     // 攻撃力
     wrestler_power += 10;
-    // 画像
-    AssetContainer* ac = AssetContainer::Get();
+    wrestler_rank = 0;
+    if (wrestler_power > 20)
+    {
+        wrestler_rank = 1;
+        if (wrestler_power > 35)
+        {
+            wrestler_rank = 2;
+        }
+    }
 }
 
 void PhaseTwo::SetTotalPower()

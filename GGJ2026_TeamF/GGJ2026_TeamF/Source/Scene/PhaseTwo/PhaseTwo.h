@@ -25,11 +25,15 @@ private:
     std::vector<PhaseTwoHeros*> select_heros;	// 戦闘するヒーロー
 	std::vector<int> power_badge_image;			// パワーの画像
 	int totalpower;								// 合計パワー
+	int heros_power_ui_image;		// ヒーローの攻撃力ウィンドウ画像
+
 
 	// レスラー
-	int wrestler_image;	// 画像
+	int wrestler_image[3];	// 画像
 	int wrestler_power;	// 攻撃力
 	int wrestler_count;	// 倒した数
+	int wrestler_rank;	// 敵のランク
+	int wrestler_power_ui_image[3];		// ヒーローの攻撃力ウィンドウ画像
 	
 	// ボタン
 	int start_image[2];			// 戦闘開始ボタン画像
@@ -38,8 +42,9 @@ private:
 	bool is_start_push;			// 押されているか
 
 	// 背景
-	int background;	// 背景画像
-	int conveyer;	// ベルトコンベア
+	int background;				// 背景画像
+	int conveyer_image;			// ベルトコンベア
+	std::vector<int> power_number_image;	// パワー表示の数字画像
 
 public:
 	PhaseTwo()
@@ -47,7 +52,7 @@ public:
 		, gameend(false)
 		, scrollx(0.0f)
 		, totalpower(0)
-		, wrestler_image(0)
+		, wrestler_image{0}
 		, wrestler_power(0)
 		, wrestler_count(0)
 		, start_image{0}
