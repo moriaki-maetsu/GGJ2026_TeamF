@@ -3,6 +3,8 @@
 #include "../SceneBase.h"
 #include "../../Hero/Heros.h"
 
+#include <vector>
+
 class PhaseTwo : public SceneBase
 {
 private:
@@ -10,23 +12,18 @@ private:
     struct PhaseTwoHeros
     {
         HeroData data;
-        bool is_selected;	// セレクトできるか
+        bool is_selected;	// 選択中か
 		bool is_delete;		// 消去するか
-
-        // --- 追加: Updateで計算し、当たり判定と描画で使う変数 ---
-        bool is_visible;        // 画面外でないか
-        float draw_l, draw_r;   // 描画座標（左右）→ 当たり判定Xに使用
-        float draw_u, draw_d;   // 描画座標（上下）→ 当たり判定Yに使用
-        float src_x, src_w;     // 元画像の切り出し情報（描画用）
     };
 
 	// システム
-	bool gameend;		// ゲームが終了フラグ
+	bool gameend;		// ゲーム終了フラグ
 	float scrollx;		// スクロール量
 
 	// ヒーロー
     std::vector<PhaseTwoHeros> heros;			// 変身したヒーロー
     std::vector<PhaseTwoHeros*> select_heros;	// 戦闘するヒーロー
+	std::vector<int> power_badge_image;			// パワーの画像
 	int totalpower;								// 合計パワー
 
 	// レスラー
@@ -35,7 +32,12 @@ private:
 	int wrestler_count;	// 倒した数
 	
 	// ボタン
-	int start_image;	// 戦闘開始ボタン画像
+	int start_image;			// 戦闘開始ボタン画像
+	Vector2D start_position;	// 描画座標
+	Vector2D start_size;		// ボタンの大きさ
+
+	// 背景
+	int background;	// 背景画像
 
 public:
 	PhaseTwo()
@@ -51,6 +53,7 @@ public:
 
 	}
 	virtual ~PhaseTwo() = default;
+
 public:
 	// 初期化
 	virtual void Initialize() override;
@@ -70,8 +73,19 @@ public:
 private:
 	// 未選択ヒーローを横スクロール用に配置する処理
 	void layoutHeroes();
-	// 当たり判定の確認/応答する処理
-	void CollisionCheck();
+
+public:
+	// 当たり判定関数
+
+	// 当たり判定チェック処理を呼び出す関数
+	void CheckCollision();
+	// スクロールキャラとの衝突チェック
+	void CheckScrollCharacterCollision();
+	// 選択解除の衝突チェック
+	void CheckDeselectCollision();
+
+public:
+
 	// 次のレスラーにする処理
 	void SetNextWrestler();
 	// 合計パワーを計算する処理
