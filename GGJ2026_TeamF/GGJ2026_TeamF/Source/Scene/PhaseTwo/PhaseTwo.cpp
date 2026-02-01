@@ -186,6 +186,18 @@ eSceneType PhaseTwo::Update(float delta_second)
 
     InputManager* input = InputManager::Get();
 
+    if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::eClick)
+    {
+        old_mouse_x = input->GetMouseLocation().x;
+    }
+    else if (input->GetMouseState(MOUSE_INPUT_LEFT) == eInputState::ePressed)
+    {
+        float now_mouse_x = input->GetMouseLocation().x;
+        scrollx += old_mouse_x - now_mouse_x;
+        old_mouse_x = now_mouse_x;
+    }
+
+
     float rot = -input->GetScrollWheel().y * 50.0f;
     scrollx += rot;
     if (scrollx < 0.0f)
