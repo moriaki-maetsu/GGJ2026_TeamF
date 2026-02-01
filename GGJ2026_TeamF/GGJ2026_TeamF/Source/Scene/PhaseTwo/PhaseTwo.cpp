@@ -30,23 +30,6 @@ void PhaseTwo::Initialize()
 
     AssetContainer* ac = AssetContainer::Get();
 
-    if (raw_data.empty())
-    {
-        int red = ac->GetImages("character_red_02.png")[0];
-        int blue = ac->GetImages("character_blue_02.png")[0];
-        int green = ac->GetImages("character_green_02.png")[0];
-        int pink = ac->GetImages("character_pink_02.png")[0];
-        int yellow = ac->GetImages("character_yellow_02.png")[0];
-        for (int i = 0; i < 5; i++)
-        {
-            heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eRed,10,red }, false, false });
-            heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eBlue,10,blue }, false, false });
-            heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eYellow,10,yellow }, false, false });
-            heros.push_back({ { Vector2D{0.0f,0.0f},eColor::eGreen,10,green }, false, false });
-            heros.push_back({ { Vector2D{0.0f,0.0f},eColor::ePink,10,pink }, false, false });
-        }
-    }
-
     for (int i = 0; i < heros.size(); i++)
     {
         heros[i].data.position.y = 80.0f;
@@ -86,8 +69,8 @@ void PhaseTwo::Initialize()
 
     // ÉTÉEÉìÉh
     bgn_battle_01 = ac->GetSound("bgn_battle_01.mp3");
-    bgn_battle_01 = ac->GetSound("bgn_battle_02.mp3");
-    bgn_battle_01 = ac->GetSound("bgn_battle_03.mp3");
+    bgn_battle_02 = ac->GetSound("bgn_battle_02.mp3");
+    bgn_battle_03 = ac->GetSound("bgn_battle_03.mp3");
     se_battle_lose = ac->GetSound("se_battle_lose.mp3");
     se_battle_start = ac->GetSound("se_battle_start.mp3");
     se_battle_win = ac->GetSound("se_battle_win.mp3");
@@ -131,6 +114,8 @@ eSceneType PhaseTwo::Update(float delta_second)
         case eNone:
             now_anime = eAnimation::eNone;
             select_heros.clear();
+            totalpower = 0;
+
 
             PlaySoundMem(voice_battle_enemy_entry, DX_PLAYTYPE_BACK);
 
@@ -151,7 +136,6 @@ eSceneType PhaseTwo::Update(float delta_second)
                 // èüÇø
                 SetNextWrestler();
                 wrestler_count++;
-                totalpower = 0;
                 scrollx = 0.0f;
                 now_anime = eAnimation::eWin;
                 draw_second = 2.0f;
