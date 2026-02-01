@@ -14,6 +14,8 @@ private:
 	int display_time_count;
 	int display_time;
 	int timelimit_count;
+	bool start_flag;
+	int start_count;
 public:
 	PhaseOne()
 		: SceneBase()
@@ -24,6 +26,8 @@ public:
 		, display_time_count()
 		, display_time()
 		, timelimit_count()
+		, start_flag()
+		, start_count()
 	{
 
 	}
