@@ -15,6 +15,7 @@ private:
 	int timelimit_count;
 	bool start_flag;
 	int start_count;
+	int conveyer_x;
 public:
 	PhaseOne()
 		: SceneBase()
@@ -26,6 +27,7 @@ public:
 		, timelimit_count()
 		, start_flag()
 		, start_count()
+		, conveyer_x()
 	{
 
 	}
