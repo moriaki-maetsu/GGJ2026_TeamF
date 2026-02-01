@@ -30,7 +30,7 @@ const std::vector<int>& AssetContainer::GetImages(const std::string& file_name, 
 int AssetContainer::GetSound(const std::string& file_name)
 {
 	// 連想配列内に取得したいハンドル情報があるか確認する（多重読み込み禁止）
-	size_t find_data = images_container.count(file_name);
+	size_t find_data = sounds_container.count(file_name);
 
 	// 連想配列内になければ、ハンドル情報を読み込む
 	if (find_data == NULL)

@@ -107,6 +107,11 @@ void PhaseOne::Initialize()
 	belt_icon[4].position.x = YELLOW_BELT_X;
 	belt_icon[4].position.y = 600.0f;
 
+	container->GetSound("bgm_change.mp3");
+	container->GetSound("se_change_belt_push.mp3");
+	container->GetSound("se_change_01.mp3");
+	container->GetSound("se_change_02.mp3");
+
 	srand((unsigned int)time(NULL));
 
 	display_time_count = 0;
@@ -129,6 +134,10 @@ eSceneType PhaseOne::Update(float delta_second)
 	}
 	else
 	{
+		if (!(CheckSoundMem(container->GetSound("bgm_change.mp3"))))
+		{
+			PlaySoundMem(container->GetSound("bgm_change.mp3"), DX_PLAYTYPE_LOOP);
+		}
 		//ヒーロー生成処理
 		if (++display_time_count >= display_time)
 		{
@@ -281,6 +290,7 @@ eSceneType PhaseOne::Update(float delta_second)
 					if (input->GetMouseLocation().y >= collision_LeftUpper.y && input->GetMouseLocation().y <= collision_RightLower.y)
 					{
 						belt[i].drag_flag = TRUE;
+						PlaySoundMem(container->GetSound("se_change_belt_push.mp3"), DX_PLAYTYPE_BACK);
 						break;
 					}
 				}
@@ -337,10 +347,16 @@ eSceneType PhaseOne::Update(float delta_second)
 										}
 										heros->SetHeros(hero[h]);
 										hero[h].change_flag = TRUE;
+										PlaySoundMem(container->GetSound("se_change_01.mp3"), DX_PLAYTYPE_BACK);
 										break;
 									}
 								}
 							}
+						}
+
+						if (h == sizeof(hero) / sizeof(hero[0]) - 1)
+						{
+							PlaySoundMem(container->GetSound("se_change_02.mp3"), DX_PLAYTYPE_BACK);
 						}
 					}
 
@@ -373,6 +389,7 @@ eSceneType PhaseOne::Update(float delta_second)
 
 	if (timelimit_count > TIMELIMIT)
 	{
+		StopSoundMem(container->GetSound("bgm_change.mp3"));
 		return eSceneType::ePhaseTwo;
 	}
 	
@@ -391,9 +408,9 @@ void PhaseOne::Draw() const
 	DrawGraph(5, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[0], TRUE);
 	DrawGraph(39, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[9], TRUE);
 	DrawGraph(73, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[10], TRUE);
-	draw_num = (timelimit_count / 60) / 10 % 10;
+	draw_num = ((timelimit_count / 2) / 60) / 10 % 10;
 	DrawGraph(107, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[draw_num], TRUE);
-	draw_num = (timelimit_count / 60) / 1 % 10;
+	draw_num = ((timelimit_count / 2) / 60) / 1 % 10;
 	DrawGraph(141, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[draw_num], TRUE);
 
 	//ヒーローの描画
