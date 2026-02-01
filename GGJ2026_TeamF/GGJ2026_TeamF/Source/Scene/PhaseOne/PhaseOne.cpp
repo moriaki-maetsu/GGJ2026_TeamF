@@ -250,6 +250,8 @@ eSceneType PhaseOne::Update(float delta_second)
 
 void PhaseOne::Draw() const
 {
+	AssetContainer* container = AssetContainer::Get();
+	//ヒーローの描画
 	for (int i = 0; i < sizeof(hero) / sizeof(hero[0]); i++)
 	{
 		if (hero[i].power != 0)
@@ -261,12 +263,21 @@ void PhaseOne::Draw() const
 		}
 	}
 
+	//ベルトの描画
+	DrawRotaGraph(RED_BELT_X, 600, 1.0, 0.0, container->GetImages("icon_belt_red_01.png")[0], TRUE);
+	DrawRotaGraph(BLUE_BELT_X, 600, 1.0, 0.0, container->GetImages("icon_belt_blue_01.png")[0], TRUE);
+	DrawRotaGraph(GREEN_BELT_X, 600, 1.0, 0.0, container->GetImages("icon_belt_green_01.png")[0], TRUE);
+	DrawRotaGraph(PINK_BELT_X, 600, 1.0, 0.0, container->GetImages("icon_belt_PINK_01.png")[0], TRUE);
+	DrawRotaGraph(YELLOW_BELT_X, 600, 1.0, 0.0, container->GetImages("icon_belt_yellow_01.png")[0], TRUE);
 	for (int i = 0; i < sizeof(belt) / sizeof(belt[0]); i++)
 	{
-		DrawRotaGraph(belt[i].position.x, belt[i].position.y, 1.0, 0.0, belt[i].image, TRUE);
-		Vector2D collision_LeftUpper = { belt[i].position.x - BELT_SIZE_X , belt[i].position.y - BELT_SIZE_Y };
-		Vector2D collision_RightLower = { belt[i].position.x + BELT_SIZE_X , belt[i].position.y + BELT_SIZE_Y };
-		DrawBox(collision_LeftUpper.x, collision_LeftUpper.y, collision_RightLower.x, collision_RightLower.y, GetColor(255, 255, 255), FALSE);
+		if (belt[i].drag_flag)
+		{
+			DrawRotaGraph(belt[i].position.x, belt[i].position.y, 1.0, 0.0, belt[i].image, TRUE);
+			Vector2D collision_LeftUpper = { belt[i].position.x - BELT_SIZE_X , belt[i].position.y - BELT_SIZE_Y };
+			Vector2D collision_RightLower = { belt[i].position.x + BELT_SIZE_X , belt[i].position.y + BELT_SIZE_Y };
+			DrawBox(collision_LeftUpper.x, collision_LeftUpper.y, collision_RightLower.x, collision_RightLower.y, GetColor(255, 255, 255), FALSE);
+		}
 	}
 
 	Heros* heros = Heros::Get();
