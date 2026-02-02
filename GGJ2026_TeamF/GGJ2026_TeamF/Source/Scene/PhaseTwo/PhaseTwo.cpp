@@ -96,9 +96,9 @@ void PhaseTwo::Initialize()
     voice_battle_win = ac->GetSound("voice_battle_win.mp3");
 
     // bgm‚Ì‰¹—Ê’á‰º
-    ChangeVolumeSoundMem(255 * 30 / 100, bgn_battle_01);
-    ChangeVolumeSoundMem(255 * 30 / 100, bgn_battle_02);
-    ChangeVolumeSoundMem(255 * 30 / 100, bgn_battle_03);
+    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_01);
+    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_02);
+    ChangeVolumeSoundMem(255 * 50 / 100, bgn_battle_03);
     ChangeVolumeSoundMem(255 * 80 / 100, se_battle_lose);
     ChangeVolumeSoundMem(255 * 50 / 100, se_battle_start);
     ChangeVolumeSoundMem(255 * 80 / 100, se_battle_win);
