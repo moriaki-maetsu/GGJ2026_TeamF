@@ -107,8 +107,15 @@ void PhaseTwo::Initialize()
     ChangeVolumeSoundMem(255 * 50 / 100, voice_battle_win);
 
     // サウンドを流す
-    PlaySoundMem(se_battle_start, DX_PLAYTYPE_BACK);
+    PlaySoundMem(se_battle_start, DX_PLAYTYPE_BACK);    // 着地音（ズドォン）
     PlaySoundMem(bgn_battle_01, DX_PLAYTYPE_LOOP);
+
+    // ヒーローがいなかったら
+    if (heros.empty())
+    {
+        // バトルして敗北
+        ChangeAnimation(eAnimation::eBattle, 0.1f);
+    }
 }
 
 eSceneType PhaseTwo::Update(float delta_second)
@@ -192,7 +199,7 @@ void PhaseTwo::Draw() const
         DrawRotaGraphF(p.x + HERO_SIZE_X + badgeoffset.x, p.y + HERO_SIZE_Y + badgeoffset.y, 0.7f, 0.0f, power_badge_image[hero.data.power - 1], TRUE);
 
         // 配列の何番目か
-        DrawFormatStringF(p.x, p.y + 100.0f, 0xffffff, "%d", i);
+        //DrawFormatStringF(p.x, p.y + 100.0f, 0xffffff, "%d", i);
 
         // 当たり判定
         //DrawBoxAA(hero.data.position.x - HERO_SIZE_X, hero.data.position.y - HERO_SIZE_Y, hero.data.position.x + HERO_SIZE_X, hero.data.position.y + HERO_SIZE_Y, 0xFFFFFF, FALSE);
@@ -295,9 +302,6 @@ void PhaseTwo::Draw() const
         DrawRotaGraphF(start_button_position.x, 400.0f, 1.f, 0.0f, lose_image, TRUE);
         break;
     }
-
-    DrawFormatStringF(0.0f, 500.0f, 0xFFFFFF, "now_anime=%d", (int)now_anime);
-    DrawFormatStringF(0.0f, 540.0f, 0xFFFFFF, "now_anime=%d", (int)old_anime);
 }
 
 void PhaseTwo::Finalize()
@@ -478,21 +482,23 @@ void PhaseTwo::ProcessAnimationState()
             heros.end()
         );
 
-        // ヒーローの座標を初期化
-        for (int i = 0; i < heros.size(); i++)
-        {
-            heros[i].data.position = { HERO_SIZE_X + i * HERO_SPACE,80.0f };
-        }
-
-        // ヒーローが残っていなかったら
+        // ヒーローがいなかったら
         if (heros.empty())
         {
+            // バトルして敗北
             ChangeAnimation(eAnimation::eBattle, 0.1f);
         }
         else
         {
-            PlaySoundMem(voice_battle_enemy_entry, DX_PLAYTYPE_BACK);
+            // ヒーローがまだいたらSE
+            PlaySoundMem(voice_battle_enemy_entry, DX_PLAYTYPE_BACK);   // （これは強敵だな）
+            // ヒーローの座標を初期化
+            for (int i = 0; i < heros.size(); i++)
+            {
+                heros[i].data.position = { HERO_SIZE_X + i * HERO_SPACE,80.0f };
+            }
         }
+
         break;
 
     case eBattle:
