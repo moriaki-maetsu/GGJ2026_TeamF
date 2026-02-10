@@ -25,65 +25,59 @@ private:
     };
 
 	// ゲームシステム
-	bool gameend;		// ゲーム終了フラグ
-	float scrollx;		// スクロール量
-	std::vector<int> power_number_image;	// パワー表示の数字画像
-	int win_image;							// 勝利画像
-	int lose_image;							// 敗北画像
-	float animation_count;		// カウント
-	int animation_num;			// 何番目か
-	eAnimation now_anime;		// 何を描画するか
-	eAnimation old_anime;		// 何を描画していたか
-	float draw_second;			// 描画する時間
-	int start_button_image[2];	// 戦闘開始ボタン画像
-	Vector2D start_position;	// スタート描画座標
-	Vector2D start_size;		// ボタンの大きさ
-	bool is_start_push;			// 押されているか
-
-	float old_mouse_x;
+	bool is_game_end;				// ゲームが終了しているかどうか
+	eAnimation now_anime;			// 現在再生中のアニメーション
+	eAnimation old_anime;			// 直前フレームで再生していたアニメーション
+	float anime_second;				// 現在のアニメーションが開始してからの経過時間（秒）
+	Vector2D start_button_position;	// 戦闘開始ボタンの描画座標
+	Vector2D start_button_size;		// 戦闘開始ボタンのサイズ（半径）
+	bool is_startbutton_hovered;	// 戦闘開始ボタンにカーソルがあるかどうか
+	float old_mouse_x;				// 1フレーム前のマウスx座標
 
 	// ヒーロー
-    std::vector<PhaseTwoHeros> heros;			// 変身したヒーロー
-    std::vector<PhaseTwoHeros*> select_heros;	// 戦闘するヒーロー
-	std::vector<int> power_badge_image;			// パワーのバッジ画像
-	int totalpower;								// 合計パワー
-	int heros_power_ui_image;					// ヒーローの攻撃力ウィンドウ画像
+    std::vector<PhaseTwoHeros> heros;			// 変身したヒーロー配列
+    std::vector<PhaseTwoHeros*> select_heros;	// 戦闘するヒーロー配列
+	int totalpower;								// 合計攻撃力
 
 	// レスラー
-	int wrestler_image[3];	// 画像
 	int wrestler_power;	// 攻撃力
 	int wrestler_count;	// 倒した数
 	int wrestler_rank;	// 敵のランク
-	int wrestler_power_ui_image[3];		// ヒーローの攻撃力ウィンドウ画像
 	
-	// 背景
-	int background;				// 背景画像
-	int conveyer_image;			// ベルトコンベア
+	/* 画像 */
+	int background_image;				// 背景画像
+	int conveyer_image;					// ベルトコンベア
+	int start_button_image[2];			// 戦闘開始ボタン画像
+	int win_image;						// 勝利
+	int lose_image;						// 敗北
+	int wrestler_image[3];				// レスラー画像3種
+	int wrestler_power_ui_image[3];		// 攻撃力背景画像（レスラー）
+	int heros_power_ui_image;			// 総攻撃力背景画像（ヒーロー）
+	std::vector<int> power_badge_image;	// 攻撃力のバッジ画像
+	std::vector<int> power_number_image;// 攻撃力の数字画像
 
-
-	// サウンド
-	int bgn_battle_01;
-	int bgn_battle_02;
-	int bgn_battle_03;
-	int se_battle_lose;
-	int se_battle_start;
-	int se_battle_win;
-	int voice_battle_enemy_entry;
-	int voice_battle_lose;
-	int voice_battle_win;
+	/* サウンド */
+	int bgn_battle_01;				// BGM_バトル1
+	int bgn_battle_02;				// BGM_バトル2
+	int bgn_battle_03;				// BGM_バトル3
+	int se_battle_start;			// SE_開始
+	int se_battle_lose;				// SE_敗北
+	int se_battle_win;				// SE_勝利
+	int voice_battle_enemy_entry;	// VOICE_レスラー入場
+	int voice_battle_win;			// VOICE_ヒーロー勝利
+	int voice_battle_lose;			// VOICE_ヒーロー敗北
 
 
 public:
 	PhaseTwo()
 		: SceneBase()
-		, gameend(false)
-		, scrollx(0.0f)
+		, is_game_end(false)
 		, totalpower(0)
 		, wrestler_image{0}
 		, wrestler_power(0)
 		, wrestler_count(0)
 		, start_button_image{0}
-		, is_start_push(false)
+		, is_startbutton_hovered(false)
 	{
 
 	}
@@ -118,9 +112,12 @@ private:
 	void CheckDeselectCollision();
 
 private:
-
+	// アニメーションが変わった時の処理
+	void ProcessAnimationState();
+	// アニメーション変更処理
+	void ChangeAnimation(eAnimation next, float duration);
 	// 次のレスラーにする処理
 	void SetNextWrestler();
-	// 合計パワーを計算する処理
+	// 合計攻撃力を計算する処理
 	void SetTotalPower();
 };

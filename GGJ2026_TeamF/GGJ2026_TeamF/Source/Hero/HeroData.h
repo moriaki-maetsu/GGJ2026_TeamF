@@ -6,8 +6,6 @@
 #define HERO_SIZE_X	(50)
 #define HERO_SIZE_Y	(65)
 
-
-
 struct HeroData
 {
 	Vector2D position = { 0.0f,0.0f };		// ç¿ïW
