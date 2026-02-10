@@ -33,7 +33,7 @@ void ResultScene::Initialize()
 	ui_button_title[1] = container->GetImages("ui_result_button_end_02.png")[0];
 	bgm_result = container->GetSound("bgm_result.mp3");
 	se_button = container->GetSound("se_result_button.mp3");
-	ChangeVolumeSoundMem(255 * 30 / 100, bgm_result);
+	ChangeVolumeSoundMem(255 * 40 / 100, bgm_result);
 	ChangeVolumeSoundMem(255 * 50 / 100, se_button);
 	PlaySoundMem(bgm_result, DX_PLAYTYPE_LOOP);
 	data = Heros::Get()->GetHeros();

@@ -72,12 +72,38 @@ public:
 	PhaseTwo()
 		: SceneBase()
 		, is_game_end(false)
+		, now_anime(eAnimation::eNone)
+		, old_anime(eAnimation::eNone)
+		, anime_second(0.0f)
+		, start_button_position()
+		, start_button_size()
+		, is_startbutton_hovered(false)
+		, old_mouse_x(0.0f)
+		, heros()
+		, select_heros()
 		, totalpower(0)
-		, wrestler_image{0}
 		, wrestler_power(0)
 		, wrestler_count(0)
-		, start_button_image{0}
-		, is_startbutton_hovered(false)
+		, wrestler_rank(0)
+		, background_image(-1)
+		, conveyer_image(-1)
+		, start_button_image{ -1, -1 }
+		, win_image(-1)
+		, lose_image(-1)
+		, wrestler_image{ -1, -1, -1 }
+		, wrestler_power_ui_image{ -1, -1, -1 }
+		, heros_power_ui_image(-1)
+		, power_badge_image()
+		, power_number_image()
+		, bgn_battle_01(-1)
+		, bgn_battle_02(-1)
+		, bgn_battle_03(-1)
+		, se_battle_start(-1)
+		, se_battle_lose(-1)
+		, se_battle_win(-1)
+		, voice_battle_enemy_entry(-1)
+		, voice_battle_win(-1)
+		, voice_battle_lose(-1)
 	{
 
 	}
