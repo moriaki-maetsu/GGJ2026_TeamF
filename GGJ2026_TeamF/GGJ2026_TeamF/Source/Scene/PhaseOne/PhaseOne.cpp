@@ -13,7 +13,7 @@
 #define YELLOW_BELT_X (760.0f)
 #define LANE_1_Y (150.0f)
 #define LANE_2_Y (300.0f)
-#define TIMELIMIT (1800)
+#define TIMELIMIT (30.0f)	// 制限時間(30秒)
 
 void PhaseOne::Initialize()
 {
@@ -119,7 +119,7 @@ void PhaseOne::Initialize()
 	srand((unsigned int)time(NULL));
 
 	display_time_count = 0;
-	display_time = 15 + rand() % 30;
+	display_time = 0.5f + ((float)(rand() % 500)) / 1000.0f;
 	timelimit_count = 0;
 
 	start_flag = TRUE;
@@ -133,7 +133,9 @@ eSceneType PhaseOne::Update(float delta_second)
 	AssetContainer* container = AssetContainer::Get();
 	if (start_flag)
 	{
-		if (++start_count >= 180)
+		start_count += delta_second;
+		// 3秒経過したら
+		if (start_count >= 3.0f)
 		{
 			start_flag = FALSE;
 		}
@@ -144,8 +146,10 @@ eSceneType PhaseOne::Update(float delta_second)
 		{
 			PlaySoundMem(bgm, DX_PLAYTYPE_LOOP);
 		}
+
+		display_time_count += delta_second;
 		//ヒーロー生成処理
-		if (++display_time_count >= display_time)
+		if (display_time_count >= display_time)
 		{
 			bool not_change_flag[5] = { TRUE,TRUE,TRUE,TRUE,TRUE };
 			while(not_change_flag[0] || not_change_flag[1] || not_change_flag[2] || not_change_flag[3] || not_change_flag[4])
@@ -204,8 +208,8 @@ eSceneType PhaseOne::Update(float delta_second)
 			}
 
 
-			display_time_count = 0;
-			display_time = 15 + rand() % 30;
+			display_time_count = 0.0f;
+			display_time = 0.5f + ((float)(rand() % 500)) / 1000.0f;
 		}
 
 		//ヒーロー移動処理
@@ -470,7 +474,7 @@ eSceneType PhaseOne::Update(float delta_second)
 				}
 			}
 		}
-		++timelimit_count;
+		timelimit_count += delta_second;
 
 		conveyer_x += 4;
 		if (conveyer_x >= 84)
@@ -500,9 +504,9 @@ void PhaseOne::Draw() const
 	DrawGraph(5, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[0], TRUE);
 	DrawGraph(39, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[9], TRUE);
 	DrawGraph(73, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[10], TRUE);
-	draw_num = (timelimit_count / 60) / 10 % 10;
+	draw_num = ((int)timelimit_count) / 10 % 10;
 	DrawGraph(107, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[draw_num], TRUE);
-	draw_num = (timelimit_count / 60) / 1 % 10;
+	draw_num = ((int)timelimit_count) / 1 % 10;
 	DrawGraph(141, 5, container->GetImages("ui_number_01.png", 11, 11, 1, 34, 68)[draw_num], TRUE);
 
 	//ヒーローの描画
@@ -541,7 +545,6 @@ void PhaseOne::Draw() const
 		DrawRotaGraph(640, 150, 0.6, 0.0, container->GetImages("character_set.png")[0], TRUE);
 		DrawGraph(0, 0, container->GetImages("ui_change_text.png")[0], TRUE);
 	}
-	
 }
 
 void PhaseOne::Finalize()

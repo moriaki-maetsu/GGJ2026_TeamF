@@ -10,16 +10,17 @@ private:
 	HeroData hero[5];
 	Belt belt[5];
 	Belt belt_icon[5];
-	int display_time_count;
-	int display_time;
-	int timelimit_count;
+	float display_time_count;
+	float display_time;
+	float timelimit_count;
 	bool start_flag;
-	int start_count;
+	float start_count;
 	int conveyer_x;
 	int bgm;
 	int belt_click_se;
 	int change_se;
 	int miss_se;
+
 public:
 	PhaseOne()
 		: SceneBase()
