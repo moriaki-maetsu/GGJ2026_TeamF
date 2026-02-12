@@ -19,7 +19,7 @@ bool Application::WakeUp()
 #if _DEBUG
 	ChangeWindowMode(TRUE);
 #else
-	ChangeWindowMode(FALSE);
+	ChangeWindowMode(TRUE);
 #endif // _DEBUG
 
 	// 画面サイズの設定
